@@ -45,6 +45,15 @@ function constrainToCanvas(obj) {
     }
 }
 
+// Update cursor based on active tool
+function updateCursor() {
+    if (activeTool) {
+        canvas.style.cursor = 'crosshair';
+    } else {
+        canvas.style.cursor = 'default';
+    }
+}
+
 // Render function
 function render() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -94,6 +103,7 @@ document.querySelectorAll('.zone-btn').forEach(btn => {
         };
         document.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
+        updateCursor();
     });
 });
 
@@ -107,6 +117,7 @@ document.querySelectorAll('.terrain-btn').forEach(btn => {
         };
         document.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
+        updateCursor();
     });
 });
 
@@ -114,12 +125,14 @@ document.getElementById('measureBtn').addEventListener('click', () => {
     activeTool = { category: 'measure' };
     document.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
     document.getElementById('measureBtn').classList.add('active');
+    updateCursor();
 });
 
 document.getElementById('textBtn').addEventListener('click', () => {
     activeTool = { category: 'text' };
     document.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
     document.getElementById('textBtn').classList.add('active');
+    updateCursor();
 });
 
 document.getElementById('exportBtn').addEventListener('click', exportImage);
@@ -135,6 +148,7 @@ document.getElementById('specialFeatureBtn').addEventListener('click', (e) => {
     };
     document.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
     document.getElementById('specialFeatureBtn').classList.add('active');
+    updateCursor();
 });
 
 // Prevent dropdown from closing when clicking on it
@@ -182,6 +196,7 @@ canvas.addEventListener('mousedown', (e) => {
         });
         activeTool = null;
         document.getElementById('textBtn').classList.remove('active');
+        updateCursor();
         render();
         return;
     }
@@ -328,6 +343,7 @@ canvas.addEventListener('mouseup', (e) => {
         measureStart = null;
         activeTool = null;
         document.getElementById('measureBtn').classList.remove('active');
+        updateCursor();
         render();
     }
     
@@ -344,6 +360,7 @@ canvas.addEventListener('mouseleave', () => {
         measureStart = null;
         activeTool = null;
         document.getElementById('measureBtn').classList.remove('active');
+        updateCursor();
         render();
     }
     
