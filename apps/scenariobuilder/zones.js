@@ -1,14 +1,28 @@
 // Zone management functions
 const zoneColors = {
-    red: 'rgba(200, 0, 0, 0.5)',      // Deeper red with more opacity
-    blue: 'rgba(0, 50, 150, 0.5)',    // Deeper blue with more opacity
-    special: 'rgba(230, 226, 22, 0.75)' // Keep yellow as is
+    red: 'rgba(200, 0, 0, 0.5)',
+    blue: 'rgba(0, 50, 150, 0.5)',
+    special: 'rgba(230, 226, 22, 0.75)'
 };
 
 function drawZone(zone) {
     ctx.fillStyle = zoneColors[zone.type];
     
-    if (zone.isCircle) {
+    if (zone.isDiagonal) {
+        ctx.beginPath();
+        ctx.moveTo(zone.points[0].x, zone.points[0].y);
+        for (let i = 1; i < zone.points.length; i++) {
+            ctx.lineTo(zone.points[i].x, zone.points[i].y);
+        }
+        ctx.closePath();
+        ctx.fill();
+        
+        if (zone === selectedItem) {
+            ctx.strokeStyle = '#e74c3c';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+        }
+    } else if (zone.isCircle) {
         ctx.beginPath();
         ctx.arc(zone.x + zone.radius, zone.y + zone.radius, zone.radius, 0, Math.PI * 2);
         ctx.fill();
@@ -18,7 +32,6 @@ function drawZone(zone) {
             ctx.lineWidth = 3;
             ctx.stroke();
             
-            // Show diameter in inches (no resize handle for fixed size)
             const diameter = (zone.radius * 2 / SCALE).toFixed(1);
             ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
             const labelText = 'Ø ' + diameter + '"';
@@ -30,7 +43,6 @@ function drawZone(zone) {
             ctx.textAlign = 'center';
             ctx.fillText(labelText, zone.x + zone.radius, zone.y + zone.radius + 4);
         } else {
-            // Show "Obj." label when not selected
             ctx.fillStyle = 'white';
             ctx.font = 'bold 14px Arial';
             ctx.textAlign = 'center';
@@ -45,7 +57,6 @@ function drawZone(zone) {
             ctx.lineWidth = 3;
             ctx.strokeRect(zone.x, zone.y, zone.width, zone.height);
             
-            // Resize handles - top-left for blue, bottom-right for red
             ctx.fillStyle = '#e74c3c';
             if (zone.type === 'blue') {
                 ctx.fillRect(zone.x - 5, zone.y - 5, 10, 10);
@@ -53,7 +64,6 @@ function drawZone(zone) {
                 ctx.fillRect(zone.x + zone.width - 5, zone.y + zone.height - 5, 10, 10);
             }
             
-            // Show dimensions in inches
             const widthInches = (zone.width / SCALE).toFixed(1);
             const heightInches = (zone.height / SCALE).toFixed(1);
             const labelText = widthInches + '" × ' + heightInches + '"';
@@ -71,7 +81,17 @@ function drawZone(zone) {
 }
 
 function isPointInZone(x, y, zone) {
-    if (zone.isCircle) {
+    if (zone.isDiagonal) {
+        const points = zone.points;
+        let inside = false;
+        for (let i = 0, j = points.length - 1; i < points.length; j = i++) {
+            const xi = points[i].x, yi = points[i].y;
+            const xj = points[j].x, yj = points[j].y;
+            const intersect = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+            if (intersect) inside = !inside;
+        }
+        return inside;
+    } else if (zone.isCircle) {
         const dx = x - (zone.x + zone.radius);
         const dy = y - (zone.y + zone.radius);
         return Math.sqrt(dx * dx + dy * dy) <= zone.radius;
@@ -83,8 +103,7 @@ function isPointInZone(x, y, zone) {
 
 function getZoneCorner(x, y, zone) {
     const cornerSize = 10;
-    // Special zone is fixed size, no resize handles
-    if (zone.isCircle) {
+    if (zone.isCircle || zone.isDiagonal) {
         return null;
     } else {
         if (Math.abs(x - (zone.x + zone.width)) < cornerSize && 
@@ -97,7 +116,6 @@ function getZoneCorner(x, y, zone) {
 
 function handleZonePlacement(x, y) {
     if (activeTool && activeTool.category === 'zone') {
-        // Special zone is fixed size
         if (activeTool.type === 'special') {
             const zone = {
                 type: activeTool.type,
@@ -118,28 +136,48 @@ function handleZonePlacement(x, y) {
             return true;
         }
         
-        // Red and Blue zones - automatic 72" × 12" dimensions (no prompt)
-        const width = 72 * SCALE;  // 72 inches
-        const height = 12 * SCALE;  // 12 inches
-        
         const zone = {
             type: activeTool.type,
             category: 'zone'
         };
         
-        // Red zone starts from northwest (top-left)
-        if (activeTool.type === 'red') {
-            zone.x = 0;
-            zone.y = 0;
-            zone.width = Math.min(width, canvas.width);
-            zone.height = Math.min(height, canvas.height);
-        }
-        // Blue zone starts from southeast (bottom-right)
-        else if (activeTool.type === 'blue') {
-            zone.width = Math.min(width, canvas.width);
-            zone.height = Math.min(height, canvas.height);
-            zone.x = canvas.width - zone.width;
-            zone.y = canvas.height - zone.height;
+        if (activeTool.zoneType === 'diagonal') {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const stopDistance = 12 * SCALE;
+            
+            if (activeTool.type === 'red') {
+                zone.isDiagonal = true;
+                zone.diagonalType = 'northeast';
+                zone.points = [
+                    {x: canvas.width, y: 0},
+                    {x: canvas.width, y: centerY - stopDistance},
+                    {x: centerX + stopDistance, y: 0}
+                ];
+            } else if (activeTool.type === 'blue') {
+                zone.isDiagonal = true;
+                zone.diagonalType = 'southwest';
+                zone.points = [
+                    {x: 0, y: canvas.height},
+                    {x: 0, y: centerY + stopDistance},
+                    {x: centerX - stopDistance, y: canvas.height}
+                ];
+            }
+        } else {
+            const width = 72 * SCALE;
+            const height = 12 * SCALE;
+            
+            if (activeTool.type === 'red') {
+                zone.x = 0;
+                zone.y = 0;
+                zone.width = Math.min(width, canvas.width);
+                zone.height = Math.min(height, canvas.height);
+            } else if (activeTool.type === 'blue') {
+                zone.width = Math.min(width, canvas.width);
+                zone.height = Math.min(height, canvas.height);
+                zone.x = canvas.width - zone.width;
+                zone.y = canvas.height - zone.height;
+            }
         }
         
         zones.push(zone);
@@ -161,18 +199,14 @@ function checkZoneClick(x, y) {
 }
 
 function handleZoneResize(x, y, zone) {
-    // Only resize if not a circle (special zone is fixed)
-    if (!zone.isCircle) {
-        // Clamp x and y to canvas boundaries first
+    if (!zone.isCircle && !zone.isDiagonal) {
         x = Math.max(0, Math.min(x, canvas.width));
         y = Math.max(0, Math.min(y, canvas.height));
         
         if (resizeCorner === 'se') {
-            // Bottom-right resize (red zone)
             zone.width = x - zone.x;
             zone.height = y - zone.y;
         } else if (resizeCorner === 'nw') {
-            // Top-left resize (blue zone)
             const newWidth = zone.width + (zone.x - x);
             const newHeight = zone.height + (zone.y - y);
             zone.x = x;
@@ -182,11 +216,10 @@ function handleZoneResize(x, y, zone) {
         }
     }
 }
+
 function drawZoneMeasurementLines(zone) {
-    // Only draw for special zones
     if (!zone.isCircle) return;
     
-    // Calculate distances to borders using radius
     const centerX = zone.x + zone.radius;
     const centerY = zone.y + zone.radius;
     const distanceToLeft = centerX / SCALE;
@@ -194,7 +227,6 @@ function drawZoneMeasurementLines(zone) {
     const distanceToRight = (canvas.width - centerX) / SCALE;
     const distanceToBottom = (canvas.height - centerY) / SCALE;
     
-    // Determine closest horizontal and vertical borders
     const closestHorizontal = distanceToLeft < distanceToRight ? 'left' : 'right';
     const closestVertical = distanceToTop < distanceToBottom ? 'top' : 'bottom';
     
@@ -202,7 +234,6 @@ function drawZoneMeasurementLines(zone) {
     ctx.lineWidth = 1;
     ctx.setLineDash([5, 5]);
     
-    // Draw horizontal measurement line
     if (closestHorizontal === 'left') {
         const lineY = centerY;
         ctx.beginPath();
@@ -227,7 +258,6 @@ function drawZoneMeasurementLines(zone) {
         ctx.fillText(distanceToRight.toFixed(1) + '"', zone.x + zone.radius * 2 + (canvas.width - (zone.x + zone.radius * 2)) / 2, lineY - 5);
     }
     
-    // Draw vertical measurement line
     if (closestVertical === 'top') {
         const lineX = centerX;
         ctx.beginPath();

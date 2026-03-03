@@ -67,11 +67,11 @@
         #canvas {
            display: block;
            background: white;
-           border: 4px solid #34495e;  /* Solid border */
-           box-shadow: 0 0 10px rgba(0,0,0,0.3);  /* Optional: adds depth */
+           border: 4px solid #34495e;
+           box-shadow: 0 0 10px rgba(0,0,0,0.3);
            cursor: crosshair;
            margin: 0 auto;
-}
+        }
 
         .info {
             text-align: center;
@@ -99,21 +99,27 @@
             margin-left: 10px;
         }
         .terrain-section {
-        position: relative;
+            position: relative;
         }
 
-        #specialShapeSelect {
-         padding: 8px;
-         background: #3498db;
-         color: white;
-         border: none;
-         border-radius: 5px;
-         cursor: pointer;
-         font-size: 14px;
+        .zone-select {
+            display: none;
+            position: absolute;
+            left: 10px;
+            top: 100%;
+            margin-top: 5px;
+            padding: 8px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            z-index: 1000;
         }
 
-        #specialShapeSelect:hover {
-        background: #2980b9;
+        .zone-select:hover {
+            background: #2980b9;
         }
 
     </style>
@@ -140,8 +146,20 @@
         <div style="flex: 1;">
             <div class="section">
                 <h3>Zones</h3>
-                <button class="btn zone-btn" data-zone="red">🔴 Red Zone</button>
-                <button class="btn zone-btn" data-zone="blue">🔵 Blue Zone</button>
+                <div style="display: inline-block; position: relative; vertical-align: top;">
+                    <button class="btn zone-btn" id="redZoneBtn" data-zone="red">🔴 Red Zone</button>
+                    <select id="redZoneTypeSelect" class="zone-select">
+                        <option value="horizontal">Horizontal (72"×12")</option>
+                        <option value="diagonal">Diagonal</option>
+                    </select>
+                </div>
+                <div style="display: inline-block; position: relative; vertical-align: top;">
+                    <button class="btn zone-btn" id="blueZoneBtn" data-zone="blue">🔵 Blue Zone</button>
+                    <select id="blueZoneTypeSelect" class="zone-select">
+                        <option value="horizontal">Horizontal (72"×12")</option>
+                        <option value="diagonal">Diagonal</option>
+                    </select>
+                </div>
             </div>
 
             <div class="section">
@@ -149,7 +167,7 @@
                 <button class="btn zone-btn" data-zone="special">🟡 Objective Zone</button>
                 <div style="display: inline-block; position: relative; vertical-align: top;">
                     <button class="btn" id="specialFeatureBtn">🟣 Special Feature</button>
-                    <select id="specialShapeSelect" style="display: none; position: absolute; left: 10px; top: 100%; margin-top: 5px; padding: 8px; background: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; z-index: 1000;">
+                    <select id="specialShapeSelect" class="zone-select">
                         <option value="circle">Circle (5")</option>
                         <option value="square">Square (6"×6")</option>
                     </select>
@@ -176,7 +194,7 @@
                 <li><strong>Measure Tool:</strong> Click to activate • Drag at least 1" to create • Drag text to reposition • Drag endpoints to resize • Click measure to select • Delete to remove</li>
                 <li><strong>Text Tool:</strong> Click to activate • Click table to place • Type to add text • Drag to move • Drag corners to resize</li>
                 <li><strong>Export Image:</strong> Click to export table • Saves as 2160×1440 PNG • All elements included</li>
-                <li><strong>Deployment Zones:</strong> Click zone color to place • Drag zone to move • Drag corners to resize • Objective Zone: Yellow circle (3.5")</li>
+                <li><strong>Deployment Zones:</strong> Click zone color • Choose horizontal or diagonal • Click table to place • Drag to move • Diagonal zones extend from corner and stop 12" from center</li>
             </ul>
         </div>
     </div>
@@ -190,6 +208,38 @@
         };
         document.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
         document.getElementById('specialFeatureBtn').classList.add('active');
+    });
+
+    document.getElementById('redZoneBtn').addEventListener('click', () => {
+        const zoneSelect = document.getElementById('redZoneTypeSelect');
+        zoneSelect.style.display = 'inline-block';
+    });
+
+    document.getElementById('redZoneTypeSelect').addEventListener('change', (e) => {
+        activeTool = {
+            category: 'zone',
+            type: 'red',
+            zoneType: e.target.value
+        };
+        document.getElementById('redZoneTypeSelect').style.display = 'none';
+        document.querySelectorAll('.zone-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('redZoneBtn').classList.add('active');
+    });
+
+    document.getElementById('blueZoneBtn').addEventListener('click', () => {
+        const zoneSelect = document.getElementById('blueZoneTypeSelect');
+        zoneSelect.style.display = 'inline-block';
+    });
+
+    document.getElementById('blueZoneTypeSelect').addEventListener('change', (e) => {
+        activeTool = {
+            category: 'zone',
+            type: 'blue',
+            zoneType: e.target.value
+        };
+        document.getElementById('blueZoneTypeSelect').style.display = 'none';
+        document.querySelectorAll('.zone-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('blueZoneBtn').classList.add('active');
     });
 </script>
 <script src="terrain.js"></script>
