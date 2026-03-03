@@ -34,7 +34,7 @@ function drawZone(zone) {
             
             const diameter = (zone.radius * 2 / SCALE).toFixed(1);
             ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
-            const labelText = 'Ø ' + diameter + '"';
+            const labelText = '\u00d8 ' + diameter + '"';
             ctx.font = 'bold 12px Arial';
             const textWidth = ctx.measureText(labelText).width;
             ctx.fillRect(zone.x + zone.radius - textWidth/2 - 5, zone.y + zone.radius - 10, textWidth + 10, 20);
@@ -66,7 +66,7 @@ function drawZone(zone) {
             
             const widthInches = (zone.width / SCALE).toFixed(1);
             const heightInches = (zone.height / SCALE).toFixed(1);
-            const labelText = widthInches + '" × ' + heightInches + '"';
+            const labelText = widthInches + '" \u00d7 ' + heightInches + '"';
             
             ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
             ctx.font = 'bold 12px Arial';
@@ -147,24 +147,23 @@ function handleZonePlacement(x, y) {
             const stopDistance = 12 * SCALE;
             
             if (activeTool.type === 'red') {
-                // Red diagonal from northwest (top-left corner)
+                // Red diagonal triangle from northwest (top-left corner)
+                // Triangle goes from corner along edges until 12" from center, then diagonally back
                 zone.isDiagonal = true;
                 zone.diagonalType = 'northwest';
                 zone.points = [
                     {x: 0, y: 0},                              // Top-left corner
-                    {x: 0, y: centerY - stopDistance},         // Left edge, stop point
-                    {x: centerX - stopDistance, y: centerY - stopDistance}, // Diagonal stop point
-                    {x: centerX - stopDistance, y: 0}          // Top edge, stop point
+                    {x: centerX - stopDistance, y: 0},         // Along top edge to 12" from center
+                    {x: 0, y: centerY - stopDistance}          // Along left edge to 12" from center
                 ];
             } else if (activeTool.type === 'blue') {
-                // Blue diagonal from southeast (bottom-right corner)
+                // Blue diagonal triangle from southeast (bottom-right corner)
                 zone.isDiagonal = true;
                 zone.diagonalType = 'southeast';
                 zone.points = [
                     {x: canvas.width, y: canvas.height},       // Bottom-right corner
-                    {x: canvas.width, y: centerY + stopDistance}, // Right edge, stop point
-                    {x: centerX + stopDistance, y: centerY + stopDistance}, // Diagonal stop point
-                    {x: centerX + stopDistance, y: canvas.height} // Bottom edge, stop point
+                    {x: centerX + stopDistance, y: canvas.height}, // Along bottom edge to 12" from center
+                    {x: canvas.width, y: centerY + stopDistance}   // Along right edge to 12" from center
                 ];
             }
         } else {

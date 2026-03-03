@@ -150,14 +150,14 @@
                     <button class="btn zone-btn" id="redZoneBtn" data-zone="red">🔴 Red Zone</button>
                     <select id="redZoneTypeSelect" class="zone-select">
                         <option value="horizontal">Horizontal (72"×12")</option>
-                        <option value="diagonal">Diagonal</option>
+                        <option value="diagonal">Diagonal Triangle</option>
                     </select>
                 </div>
                 <div style="display: inline-block; position: relative; vertical-align: top;">
                     <button class="btn zone-btn" id="blueZoneBtn" data-zone="blue">🔵 Blue Zone</button>
                     <select id="blueZoneTypeSelect" class="zone-select">
                         <option value="horizontal">Horizontal (72"×12")</option>
-                        <option value="diagonal">Diagonal</option>
+                        <option value="diagonal">Diagonal Triangle</option>
                     </select>
                 </div>
             </div>
@@ -194,7 +194,7 @@
                 <li><strong>Measure Tool:</strong> Click to activate • Drag at least 1" to create • Drag text to reposition • Drag endpoints to resize • Click measure to select • Delete to remove</li>
                 <li><strong>Text Tool:</strong> Click to activate • Click table to place • Type to add text • Drag to move • Drag corners to resize</li>
                 <li><strong>Export Image:</strong> Click to export table • Saves as 2160×1440 PNG • All elements included</li>
-                <li><strong>Deployment Zones:</strong> Click zone color • Choose horizontal or diagonal • Zone places automatically • Drag to move • Diagonal zones extend from corner and stop 12" from center</li>
+                <li><strong>Deployment Zones:</strong> Click zone color • Choose horizontal or diagonal • Zone places automatically • Diagonal triangles cover corner until 12" from center</li>
             </ul>
         </div>
     </div>
@@ -250,24 +250,22 @@
         
         if (zoneType === 'diagonal') {
             if (type === 'red') {
-                // Red diagonal from northwest (top-left corner)
+                // Red diagonal triangle from northwest (top-left corner)
                 zone.isDiagonal = true;
                 zone.diagonalType = 'northwest';
                 zone.points = [
                     {x: 0, y: 0},                              // Top-left corner
-                    {x: 0, y: centerY - stopDistance},         // Left edge, stop point
-                    {x: centerX - stopDistance, y: centerY - stopDistance}, // Diagonal stop point
-                    {x: centerX - stopDistance, y: 0}          // Top edge, stop point
+                    {x: centerX - stopDistance, y: 0},         // Along top edge to 12" from center
+                    {x: 0, y: centerY - stopDistance}          // Along left edge to 12" from center
                 ];
             } else if (type === 'blue') {
-                // Blue diagonal from southeast (bottom-right corner)
+                // Blue diagonal triangle from southeast (bottom-right corner)
                 zone.isDiagonal = true;
                 zone.diagonalType = 'southeast';
                 zone.points = [
                     {x: canvas.width, y: canvas.height},       // Bottom-right corner
-                    {x: canvas.width, y: centerY + stopDistance}, // Right edge, stop point
-                    {x: centerX + stopDistance, y: centerY + stopDistance}, // Diagonal stop point
-                    {x: centerX + stopDistance, y: canvas.height} // Bottom edge, stop point
+                    {x: centerX + stopDistance, y: canvas.height}, // Along bottom edge to 12" from center
+                    {x: canvas.width, y: centerY + stopDistance}   // Along right edge to 12" from center
                 ];
             }
         } else {
