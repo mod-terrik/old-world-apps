@@ -194,20 +194,7 @@ canvas.addEventListener('mousedown', (e) => {
         return;
     }
     
-    // Check for zone resize corners
-    for (let i = zones.length - 1; i >= 0; i--) {
-        const zone = zones[i];
-        const corner = getZoneCorner(x, y, zone);
-        if (corner) {
-            selectedItem = zone;
-            resizing = true;
-            resizeCorner = corner;
-            render();
-            return;
-        }
-    }
-    
-    // Check for terrain resize corners
+    // Check for terrain resize corners first (terrain should be above zones)
     for (let i = terrainPieces.length - 1; i >= 0; i--) {
         const terrain = terrainPieces[i];
         const corner = getTerrainCorner(x, y, terrain);
@@ -220,9 +207,22 @@ canvas.addEventListener('mousedown', (e) => {
         }
     }
     
-    // Check for clicks on existing items
+    // Check for zone resize corners (only after terrain)
+    for (let i = zones.length - 1; i >= 0; i--) {
+        const zone = zones[i];
+        const corner = getZoneCorner(x, y, zone);
+        if (corner) {
+            selectedItem = zone;
+            resizing = true;
+            resizeCorner = corner;
+            render();
+            return;
+        }
+    }
+    
+    // Check for clicks on existing items - terrain and text should be checked BEFORE zones
     let clicked = checkTextClick(x, y) || checkMeasureClick(x, y) || 
-                  checkZoneClick(x, y) || checkTerrainClick(x, y);
+                  checkTerrainClick(x, y) || checkZoneClick(x, y);
     
     if (clicked) {
         selectedItem = clicked;
