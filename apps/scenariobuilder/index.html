@@ -194,7 +194,7 @@
                 <li><strong>Measure Tool:</strong> Click to activate • Drag at least 1" to create • Drag text to reposition • Drag endpoints to resize • Click measure to select • Delete to remove</li>
                 <li><strong>Text Tool:</strong> Click to activate • Click table to place • Type to add text • Drag to move • Drag corners to resize</li>
                 <li><strong>Export Image:</strong> Click to export table • Saves as 2160×1440 PNG • All elements included</li>
-                <li><strong>Deployment Zones:</strong> Click zone color • Choose horizontal or diagonal • Zone places automatically • Diagonal triangles have 24" gap between diagonal lines</li>
+                <li><strong>Deployment Zones:</strong> Click zone color • Choose horizontal or diagonal • Zones place automatically • Horizontal zones at north/south borders • Diagonal triangles have 24" gap</li>
             </ul>
         </div>
     </div>
@@ -288,20 +288,22 @@
                 ];
             }
         } else {
-            // Horizontal zones
-            const width = 72 * SCALE;
-            const height = 12 * SCALE;
+            // Horizontal zones - full width, 12" height
+            const width = canvas.width;      // Full 72" width
+            const height = 12 * SCALE;       // 12" height
             
             if (type === 'red') {
+                // Red zone at north (top) border
                 zone.x = 0;
                 zone.y = 0;
-                zone.width = Math.min(width, canvas.width);
-                zone.height = Math.min(height, canvas.height);
+                zone.width = width;
+                zone.height = height;
             } else if (type === 'blue') {
-                zone.width = Math.min(width, canvas.width);
-                zone.height = Math.min(height, canvas.height);
-                zone.x = canvas.width - zone.width;
-                zone.y = canvas.height - zone.height;
+                // Blue zone at south (bottom) border
+                zone.x = 0;
+                zone.y = canvas.height - height;
+                zone.width = width;
+                zone.height = height;
             }
         }
         
