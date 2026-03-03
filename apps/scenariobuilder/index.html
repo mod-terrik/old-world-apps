@@ -162,7 +162,7 @@
                     </div>
                     <div class="zone-column">
                         <button class="btn zone-btn" id="blueZoneBtn" data-zone="blue">🔵 Horizontal Blue</button>
-                        <button class="btn zone-btn" id="blueDiagonalBtn">🔺 Diagonal Blue</button>
+                        <button class="btn zone-btn" id="blueDiagonalBtn">🔻 Diagonal Blue</button>
                     </div>
                 </div>
             </div>
@@ -220,23 +220,39 @@
         document.getElementById('specialFeatureBtn').classList.add('active');
     });
 
+    // Helper function to check if a zone already exists
+    function zoneExists(type, isDiagonal) {
+        return zones.some(zone => {
+            if (zone.type !== type) return false;
+            if (isDiagonal) {
+                return zone.isDiagonal === true;
+            } else {
+                return !zone.isDiagonal;
+            }
+        });
+    }
+
     // Horizontal Red Zone - places immediately
     document.getElementById('redZoneBtn').addEventListener('click', () => {
+        if (zoneExists('red', false)) return; // Don't place if already exists
         createZoneImmediately('red', 'horizontal');
     });
 
     // Horizontal Blue Zone - places immediately
     document.getElementById('blueZoneBtn').addEventListener('click', () => {
+        if (zoneExists('blue', false)) return; // Don't place if already exists
         createZoneImmediately('blue', 'horizontal');
     });
 
     // Diagonal Red Zone - places immediately
     document.getElementById('redDiagonalBtn').addEventListener('click', () => {
+        if (zoneExists('red', true)) return; // Don't place if already exists
         createZoneImmediately('red', 'diagonal');
     });
 
     // Diagonal Blue Zone - places immediately
     document.getElementById('blueDiagonalBtn').addEventListener('click', () => {
+        if (zoneExists('blue', true)) return; // Don't place if already exists
         createZoneImmediately('blue', 'diagonal');
     });
 
