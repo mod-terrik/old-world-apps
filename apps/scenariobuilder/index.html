@@ -198,7 +198,12 @@
             </ul>
         </div>
     </div>
+<script src="terrain.js"></script>
+<script src="zones.js"></script>
+<script src="tools.js"></script>
+<script src="app.js"></script>
 <script>
+    // Zone placement handlers - must come after app.js loads so SCALE and zones are defined
     document.getElementById('specialFeatureBtn').addEventListener('click', () => {
         const shapeSelect = document.getElementById('specialShapeSelect');
         shapeSelect.style.display = 'inline-block';
@@ -311,9 +316,5 @@
         render();
     }
 </script>
-<script src="terrain.js"></script>
-<script src="zones.js"></script>
-<script src="tools.js"></script>
-<script src="app.js"></script>
 </body>
 </html>
