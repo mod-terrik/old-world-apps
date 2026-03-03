@@ -45,12 +45,12 @@ function constrainToCanvas(obj) {
     }
 }
 
-// Update cursor based on active tool
+// Update cursor based on active tool - apply to body so it shows everywhere
 function updateCursor() {
     if (activeTool) {
-        canvas.style.setProperty('cursor', 'crosshair', 'important');
+        document.body.style.cursor = 'crosshair';
     } else {
-        canvas.style.setProperty('cursor', 'default', 'important');
+        document.body.style.cursor = 'default';
     }
 }
 
