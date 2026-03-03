@@ -147,19 +147,19 @@
             <div class="section">
                 <h3>Zones</h3>
                 <div style="display: inline-block; position: relative; vertical-align: top;">
-                    <button class="btn zone-btn" id="redZoneBtn" data-zone="red">🔴 Red Zone</button>
+                    <button class="btn zone-btn" id="redZoneBtn" data-zone="red">🔴 Horizontal Red</button>
                     <select id="redZoneTypeSelect" class="zone-select">
-                        <option value="horizontal" selected>Horizontal (72"×12")</option>
                         <option value="diagonal">Diagonal Triangle</option>
                     </select>
                 </div>
                 <div style="display: inline-block; position: relative; vertical-align: top;">
-                    <button class="btn zone-btn" id="blueZoneBtn" data-zone="blue">🔵 Blue Zone</button>
+                    <button class="btn zone-btn" id="blueZoneBtn" data-zone="blue">🔵 Horizontal Blue</button>
                     <select id="blueZoneTypeSelect" class="zone-select">
-                        <option value="horizontal" selected>Horizontal (72"×12")</option>
                         <option value="diagonal">Diagonal Triangle</option>
                     </select>
                 </div>
+                <button class="btn" id="redDiagonalBtn">🔺 Red Diagonal</button>
+                <button class="btn" id="blueDiagonalBtn">🔹 Blue Diagonal</button>
             </div>
 
             <div class="section">
@@ -194,7 +194,7 @@
                 <li><strong>Measure Tool:</strong> Click to activate • Drag at least 1" to create • Drag text to reposition • Drag endpoints to resize • Click measure to select • Delete to remove</li>
                 <li><strong>Text Tool:</strong> Click to activate • Click table to place • Type to add text • Drag to move • Drag corners to resize</li>
                 <li><strong>Export Image:</strong> Click to export table • Saves as 2160×1440 PNG • All elements included</li>
-                <li><strong>Deployment Zones:</strong> Click zone button to show dropdown • Select horizontal (places at border) or diagonal (places at corner) • Zones place automatically • Diagonal triangles have 24" gap</li>
+                <li><strong>Deployment Zones:</strong> Click horizontal zone button to place immediately at border • Click diagonal button to place corner triangle • Diagonal triangles have 24" gap</li>
             </ul>
         </div>
     </div>
@@ -215,66 +215,24 @@
         document.getElementById('specialFeatureBtn').classList.add('active');
     });
 
-    document.getElementById('redZoneBtn').addEventListener('click', (e) => {
-        e.stopPropagation();
-        const zoneSelect = document.getElementById('redZoneTypeSelect');
-        
-        // Toggle dropdown visibility
-        if (zoneSelect.style.display === 'inline-block') {
-            zoneSelect.style.display = 'none';
-        } else {
-            zoneSelect.style.display = 'inline-block';
-            // Force focus on dropdown
-            zoneSelect.focus();
-        }
+    // Horizontal Red Zone - places immediately
+    document.getElementById('redZoneBtn').addEventListener('click', () => {
+        createZoneImmediately('red', 'horizontal');
     });
 
-    document.getElementById('redZoneTypeSelect').addEventListener('change', (e) => {
-        const zoneType = e.target.value;
-        document.getElementById('redZoneTypeSelect').style.display = 'none';
-        document.querySelectorAll('.zone-btn').forEach(b => b.classList.remove('active'));
-        
-        // Create zone immediately
-        createZoneImmediately('red', zoneType);
+    // Horizontal Blue Zone - places immediately
+    document.getElementById('blueZoneBtn').addEventListener('click', () => {
+        createZoneImmediately('blue', 'horizontal');
     });
 
-    // Prevent dropdown from closing when clicking on it
-    document.getElementById('redZoneTypeSelect').addEventListener('click', (e) => {
-        e.stopPropagation();
+    // Diagonal Red Zone - places immediately
+    document.getElementById('redDiagonalBtn').addEventListener('click', () => {
+        createZoneImmediately('red', 'diagonal');
     });
 
-    document.getElementById('blueZoneBtn').addEventListener('click', (e) => {
-        e.stopPropagation();
-        const zoneSelect = document.getElementById('blueZoneTypeSelect');
-        
-        // Toggle dropdown visibility
-        if (zoneSelect.style.display === 'inline-block') {
-            zoneSelect.style.display = 'none';
-        } else {
-            zoneSelect.style.display = 'inline-block';
-            // Force focus on dropdown
-            zoneSelect.focus();
-        }
-    });
-
-    document.getElementById('blueZoneTypeSelect').addEventListener('change', (e) => {
-        const zoneType = e.target.value;
-        document.getElementById('blueZoneTypeSelect').style.display = 'none';
-        document.querySelectorAll('.zone-btn').forEach(b => b.classList.remove('active'));
-        
-        // Create zone immediately
-        createZoneImmediately('blue', zoneType);
-    });
-
-    // Prevent dropdown from closing when clicking on it
-    document.getElementById('blueZoneTypeSelect').addEventListener('click', (e) => {
-        e.stopPropagation();
-    });
-
-    // Hide dropdowns when clicking elsewhere
-    document.addEventListener('click', () => {
-        document.getElementById('redZoneTypeSelect').style.display = 'none';
-        document.getElementById('blueZoneTypeSelect').style.display = 'none';
+    // Diagonal Blue Zone - places immediately
+    document.getElementById('blueDiagonalBtn').addEventListener('click', () => {
+        createZoneImmediately('blue', 'diagonal');
     });
 
     function createZoneImmediately(type, zoneType) {
