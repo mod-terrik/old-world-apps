@@ -149,14 +149,14 @@
                 <div style="display: inline-block; position: relative; vertical-align: top;">
                     <button class="btn zone-btn" id="redZoneBtn" data-zone="red">🔴 Red Zone</button>
                     <select id="redZoneTypeSelect" class="zone-select">
-                        <option value="horizontal">Horizontal (72"×12")</option>
+                        <option value="horizontal" selected>Horizontal (72"×12")</option>
                         <option value="diagonal">Diagonal Triangle</option>
                     </select>
                 </div>
                 <div style="display: inline-block; position: relative; vertical-align: top;">
                     <button class="btn zone-btn" id="blueZoneBtn" data-zone="blue">🔵 Blue Zone</button>
                     <select id="blueZoneTypeSelect" class="zone-select">
-                        <option value="horizontal">Horizontal (72"×12")</option>
+                        <option value="horizontal" selected>Horizontal (72"×12")</option>
                         <option value="diagonal">Diagonal Triangle</option>
                     </select>
                 </div>
@@ -194,7 +194,7 @@
                 <li><strong>Measure Tool:</strong> Click to activate • Drag at least 1" to create • Drag text to reposition • Drag endpoints to resize • Click measure to select • Delete to remove</li>
                 <li><strong>Text Tool:</strong> Click to activate • Click table to place • Type to add text • Drag to move • Drag corners to resize</li>
                 <li><strong>Export Image:</strong> Click to export table • Saves as 2160×1440 PNG • All elements included</li>
-                <li><strong>Deployment Zones:</strong> Click zone color • Choose horizontal or diagonal • Zones place automatically • Horizontal zones at north/south borders • Diagonal triangles have 24" gap</li>
+                <li><strong>Deployment Zones:</strong> Click zone button to show dropdown • Select horizontal (places at border) or diagonal (places at corner) • Zones place automatically • Diagonal triangles have 24" gap</li>
             </ul>
         </div>
     </div>
@@ -215,9 +215,18 @@
         document.getElementById('specialFeatureBtn').classList.add('active');
     });
 
-    document.getElementById('redZoneBtn').addEventListener('click', () => {
+    document.getElementById('redZoneBtn').addEventListener('click', (e) => {
+        e.stopPropagation();
         const zoneSelect = document.getElementById('redZoneTypeSelect');
-        zoneSelect.style.display = 'inline-block';
+        
+        // Toggle dropdown visibility
+        if (zoneSelect.style.display === 'inline-block') {
+            zoneSelect.style.display = 'none';
+        } else {
+            zoneSelect.style.display = 'inline-block';
+            // Force focus on dropdown
+            zoneSelect.focus();
+        }
     });
 
     document.getElementById('redZoneTypeSelect').addEventListener('change', (e) => {
@@ -229,9 +238,23 @@
         createZoneImmediately('red', zoneType);
     });
 
-    document.getElementById('blueZoneBtn').addEventListener('click', () => {
+    // Prevent dropdown from closing when clicking on it
+    document.getElementById('redZoneTypeSelect').addEventListener('click', (e) => {
+        e.stopPropagation();
+    });
+
+    document.getElementById('blueZoneBtn').addEventListener('click', (e) => {
+        e.stopPropagation();
         const zoneSelect = document.getElementById('blueZoneTypeSelect');
-        zoneSelect.style.display = 'inline-block';
+        
+        // Toggle dropdown visibility
+        if (zoneSelect.style.display === 'inline-block') {
+            zoneSelect.style.display = 'none';
+        } else {
+            zoneSelect.style.display = 'inline-block';
+            // Force focus on dropdown
+            zoneSelect.focus();
+        }
     });
 
     document.getElementById('blueZoneTypeSelect').addEventListener('change', (e) => {
@@ -241,6 +264,17 @@
         
         // Create zone immediately
         createZoneImmediately('blue', zoneType);
+    });
+
+    // Prevent dropdown from closing when clicking on it
+    document.getElementById('blueZoneTypeSelect').addEventListener('click', (e) => {
+        e.stopPropagation();
+    });
+
+    // Hide dropdowns when clicking elsewhere
+    document.addEventListener('click', () => {
+        document.getElementById('redZoneTypeSelect').style.display = 'none';
+        document.getElementById('blueZoneTypeSelect').style.display = 'none';
     });
 
     function createZoneImmediately(type, zoneType) {
