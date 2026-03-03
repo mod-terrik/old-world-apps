@@ -147,25 +147,24 @@ function handleZonePlacement(x, y) {
             const stopDistance = 12 * SCALE;
             
             if (activeTool.type === 'red') {
-                // Red diagonal from northeast (top-right corner)
-                // Create a polygon that covers the corner and stops 12" from center
+                // Red diagonal from northwest (top-left corner)
                 zone.isDiagonal = true;
-                zone.diagonalType = 'northeast';
+                zone.diagonalType = 'northwest';
                 zone.points = [
-                    {x: canvas.width, y: 0},                    // Top-right corner
-                    {x: canvas.width, y: centerY - stopDistance}, // Right edge, stop point
-                    {x: centerX + stopDistance, y: centerY - stopDistance}, // Diagonal stop point
-                    {x: centerX + stopDistance, y: 0}          // Top edge, stop point
+                    {x: 0, y: 0},                              // Top-left corner
+                    {x: 0, y: centerY - stopDistance},         // Left edge, stop point
+                    {x: centerX - stopDistance, y: centerY - stopDistance}, // Diagonal stop point
+                    {x: centerX - stopDistance, y: 0}          // Top edge, stop point
                 ];
             } else if (activeTool.type === 'blue') {
-                // Blue diagonal from southwest (bottom-left corner)
+                // Blue diagonal from southeast (bottom-right corner)
                 zone.isDiagonal = true;
-                zone.diagonalType = 'southwest';
+                zone.diagonalType = 'southeast';
                 zone.points = [
-                    {x: 0, y: canvas.height},                   // Bottom-left corner
-                    {x: 0, y: centerY + stopDistance},          // Left edge, stop point
-                    {x: centerX - stopDistance, y: centerY + stopDistance}, // Diagonal stop point
-                    {x: centerX - stopDistance, y: canvas.height} // Bottom edge, stop point
+                    {x: canvas.width, y: canvas.height},       // Bottom-right corner
+                    {x: canvas.width, y: centerY + stopDistance}, // Right edge, stop point
+                    {x: centerX + stopDistance, y: centerY + stopDistance}, // Diagonal stop point
+                    {x: centerX + stopDistance, y: canvas.height} // Bottom edge, stop point
                 ];
             }
         } else {
