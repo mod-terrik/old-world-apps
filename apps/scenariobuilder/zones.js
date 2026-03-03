@@ -146,24 +146,29 @@ function handleZonePlacement(x, y) {
             const centerY = canvas.height / 2;
             const stopDistance = 12 * SCALE;
             
+            // Calculate the diagonal distance using Pythagorean theorem
+            // We want the hypotenuse to be 12 inches from center
+            // For a 45-degree diagonal: diagonal distance = sqrt(2) * perpendicular distance
+            const diagonalDistance = stopDistance * Math.sqrt(2);
+            
             if (activeTool.type === 'red') {
                 // Red diagonal triangle from northwest (top-left corner)
-                // Triangle goes from corner along edges until 12" from center, then diagonally back
+                // The diagonal line passes through points that are diagonalDistance from center
                 zone.isDiagonal = true;
                 zone.diagonalType = 'northwest';
                 zone.points = [
-                    {x: 0, y: 0},                              // Top-left corner
-                    {x: centerX - stopDistance, y: 0},         // Along top edge to 12" from center
-                    {x: 0, y: centerY - stopDistance}          // Along left edge to 12" from center
+                    {x: 0, y: 0},                                    // Top-left corner
+                    {x: centerX + diagonalDistance, y: 0},           // Along top edge
+                    {x: 0, y: centerY + diagonalDistance}            // Along left edge
                 ];
             } else if (activeTool.type === 'blue') {
                 // Blue diagonal triangle from southeast (bottom-right corner)
                 zone.isDiagonal = true;
                 zone.diagonalType = 'southeast';
                 zone.points = [
-                    {x: canvas.width, y: canvas.height},       // Bottom-right corner
-                    {x: centerX + stopDistance, y: canvas.height}, // Along bottom edge to 12" from center
-                    {x: canvas.width, y: centerY + stopDistance}   // Along right edge to 12" from center
+                    {x: canvas.width, y: canvas.height},                        // Bottom-right corner
+                    {x: centerX - diagonalDistance, y: canvas.height},          // Along bottom edge
+                    {x: canvas.width, y: centerY - diagonalDistance}            // Along right edge
                 ];
             }
         } else {

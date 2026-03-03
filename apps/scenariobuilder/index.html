@@ -194,7 +194,7 @@
                 <li><strong>Measure Tool:</strong> Click to activate • Drag at least 1" to create • Drag text to reposition • Drag endpoints to resize • Click measure to select • Delete to remove</li>
                 <li><strong>Text Tool:</strong> Click to activate • Click table to place • Type to add text • Drag to move • Drag corners to resize</li>
                 <li><strong>Export Image:</strong> Click to export table • Saves as 2160×1440 PNG • All elements included</li>
-                <li><strong>Deployment Zones:</strong> Click zone color • Choose horizontal or diagonal • Zone places automatically • Diagonal triangles cover corner until 12" from center</li>
+                <li><strong>Deployment Zones:</strong> Click zone color • Choose horizontal or diagonal • Zone places automatically • Diagonal triangles cover corner with diagonal line 12" from center</li>
             </ul>
         </div>
     </div>
@@ -249,23 +249,28 @@
         const stopDistance = 12 * SCALE;
         
         if (zoneType === 'diagonal') {
+            // Calculate the diagonal distance using Pythagorean theorem
+            // The diagonal line should be 12 inches from center
+            // For a 45-degree diagonal: diagonal distance = sqrt(2) * perpendicular distance
+            const diagonalDistance = stopDistance * Math.sqrt(2);
+            
             if (type === 'red') {
                 // Red diagonal triangle from northwest (top-left corner)
                 zone.isDiagonal = true;
                 zone.diagonalType = 'northwest';
                 zone.points = [
-                    {x: 0, y: 0},                              // Top-left corner
-                    {x: centerX - stopDistance, y: 0},         // Along top edge to 12" from center
-                    {x: 0, y: centerY - stopDistance}          // Along left edge to 12" from center
+                    {x: 0, y: 0},                                    // Top-left corner
+                    {x: centerX + diagonalDistance, y: 0},           // Along top edge
+                    {x: 0, y: centerY + diagonalDistance}            // Along left edge
                 ];
             } else if (type === 'blue') {
                 // Blue diagonal triangle from southeast (bottom-right corner)
                 zone.isDiagonal = true;
                 zone.diagonalType = 'southeast';
                 zone.points = [
-                    {x: canvas.width, y: canvas.height},       // Bottom-right corner
-                    {x: centerX + stopDistance, y: canvas.height}, // Along bottom edge to 12" from center
-                    {x: canvas.width, y: centerY + stopDistance}   // Along right edge to 12" from center
+                    {x: canvas.width, y: canvas.height},                        // Bottom-right corner
+                    {x: centerX - diagonalDistance, y: canvas.height},          // Along bottom edge
+                    {x: canvas.width, y: centerY - diagonalDistance}            // Along right edge
                 ];
             }
         } else {
