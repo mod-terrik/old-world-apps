@@ -142,33 +142,56 @@ function handleZonePlacement(x, y) {
         };
         
         if (activeTool.zoneType === 'diagonal') {
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2;
-            const stopDistance = 12 * SCALE;
+            const centerX = canvas.width / 2;   // 540px = 36"
+            const centerY = canvas.height / 2;  // 360px = 24"
+            const perpDistance = 12 * SCALE;    // 180px = 12"
             
-            // Calculate the diagonal distance using Pythagorean theorem
-            // We want the hypotenuse to be 12 inches from center
-            // For a 45-degree diagonal: diagonal distance = sqrt(2) * perpendicular distance
-            const diagonalDistance = stopDistance * Math.sqrt(2);
+            // For a 45-degree diagonal line perpendicular distance from center:
+            // The line equation: x + y = constant
+            // Distance from point (cx, cy) to line x + y = c is: |cx + cy - c| / sqrt(2)
+            // We want this distance = perpDistance
+            // So: |cx + cy - c| / sqrt(2) = perpDistance
+            // Therefore: c = cx + cy ± perpDistance * sqrt(2)
+            
+            const offset = perpDistance * Math.sqrt(2);
             
             if (activeTool.type === 'red') {
-                // Red diagonal triangle from northwest (top-left corner)
-                // The diagonal line passes through points that are diagonalDistance from center
+                // Red diagonal from northwest corner
+                // Line passes through points where x + y = centerX + centerY - offset
+                const lineConstant = centerX + centerY - offset;
+                
                 zone.isDiagonal = true;
                 zone.diagonalType = 'northwest';
+                
+                // Find where this line intersects the edges
+                // Top edge (y=0): x = lineConstant
+                // Left edge (x=0): y = lineConstant
+                const topIntersect = Math.min(lineConstant, canvas.width);
+                const leftIntersect = Math.min(lineConstant, canvas.height);
+                
                 zone.points = [
-                    {x: 0, y: 0},                                    // Top-left corner
-                    {x: centerX + diagonalDistance, y: 0},           // Along top edge
-                    {x: 0, y: centerY + diagonalDistance}            // Along left edge
+                    {x: 0, y: 0},                      // Top-left corner
+                    {x: topIntersect, y: 0},           // Along top edge
+                    {x: 0, y: leftIntersect}           // Along left edge
                 ];
             } else if (activeTool.type === 'blue') {
-                // Blue diagonal triangle from southeast (bottom-right corner)
+                // Blue diagonal from southeast corner
+                // Line passes through points where x + y = centerX + centerY + offset
+                const lineConstant = centerX + centerY + offset;
+                
                 zone.isDiagonal = true;
                 zone.diagonalType = 'southeast';
+                
+                // Find where this line intersects the edges
+                // Bottom edge (y=canvas.height): x = lineConstant - canvas.height
+                // Right edge (x=canvas.width): y = lineConstant - canvas.width
+                const bottomIntersect = Math.max(lineConstant - canvas.height, 0);
+                const rightIntersect = Math.max(lineConstant - canvas.width, 0);
+                
                 zone.points = [
-                    {x: canvas.width, y: canvas.height},                        // Bottom-right corner
-                    {x: centerX - diagonalDistance, y: canvas.height},          // Along bottom edge
-                    {x: canvas.width, y: centerY - diagonalDistance}            // Along right edge
+                    {x: canvas.width, y: canvas.height},  // Bottom-right corner
+                    {x: bottomIntersect, y: canvas.height}, // Along bottom edge
+                    {x: canvas.width, y: rightIntersect}    // Along right edge
                 ];
             }
         } else {
