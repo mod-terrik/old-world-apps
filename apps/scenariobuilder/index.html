@@ -122,6 +122,16 @@
             background: #2980b9;
         }
 
+        .zone-columns {
+            display: flex;
+            gap: 10px;
+        }
+
+        .zone-column {
+            display: flex;
+            flex-direction: column;
+        }
+
     </style>
 </head>
 <body>
@@ -146,20 +156,16 @@
         <div style="flex: 1;">
             <div class="section">
                 <h3>Zones</h3>
-                <div style="display: inline-block; position: relative; vertical-align: top;">
-                    <button class="btn zone-btn" id="redZoneBtn" data-zone="red">🔴 Horizontal Red</button>
-                    <select id="redZoneTypeSelect" class="zone-select">
-                        <option value="diagonal">Diagonal Triangle</option>
-                    </select>
+                <div class="zone-columns">
+                    <div class="zone-column">
+                        <button class="btn zone-btn" id="redZoneBtn" data-zone="red">🔴 Horizontal Red</button>
+                        <button class="btn" id="redDiagonalBtn">🔺 Red Diagonal</button>
+                    </div>
+                    <div class="zone-column">
+                        <button class="btn zone-btn" id="blueZoneBtn" data-zone="blue">🔵 Horizontal Blue</button>
+                        <button class="btn" id="blueDiagonalBtn">🔹 Blue Diagonal</button>
+                    </div>
                 </div>
-                <div style="display: inline-block; position: relative; vertical-align: top;">
-                    <button class="btn zone-btn" id="blueZoneBtn" data-zone="blue">🔵 Horizontal Blue</button>
-                    <select id="blueZoneTypeSelect" class="zone-select">
-                        <option value="diagonal">Diagonal Triangle</option>
-                    </select>
-                </div>
-                <button class="btn" id="redDiagonalBtn">🔺 Red Diagonal</button>
-                <button class="btn" id="blueDiagonalBtn">🔹 Blue Diagonal</button>
             </div>
 
             <div class="section">
