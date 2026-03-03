@@ -1,7 +1,7 @@
 <?php
 // Configuration
-$baseImageDir = '../images/';
-$baseTextDir = '../text/';
+$baseImageDir = '../resources/images/';
+$baseTextDir = '../resources/text/';
 $maxFileSize = 5 * 1024 * 1024; // 5MB
 $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
 $categories = ['ttgc', 'squarebased'];

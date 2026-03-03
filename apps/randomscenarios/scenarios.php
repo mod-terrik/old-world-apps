@@ -1,7 +1,7 @@
 <?php
 // Directory containing images and text files
-$imageDir = '../images';
-$textDir = '../text';
+$imageDir = './resources/images';
+$textDir = './resources/text';
 
 // Initialize variables
 $selectedOption = isset($_POST['scenario_type']) ? $_POST['scenario_type'] : null;
@@ -142,7 +142,7 @@ button:hover {
 </style>
 </head>
 <body>
-<center><a href="../index.html"><img src="../towlogo.jpg" style="width:300px;height:150px;"></a></center>
+<center><a href="../index.html"><img src="/../../../towlogo.jpg" style="width:300px;height:150px;"></a></center>
 <center><u><h1>Scenario Selector</h1></u></center>
 <?php if (!$selectedOption && !$showScenarioList): ?>
 <!-- Dropdown selection section -->
