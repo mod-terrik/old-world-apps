@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warhammer: Old World Utilities</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background-color: #f5f5f0;
+            color: #3a3a3a;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            background-color: #fefefe;
+            padding: 50px 60px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo-container img {
+            max-width: 280px;
+            height: auto;
+            opacity: 0.95;
+        }
+
+        h1 {
+            text-align: center;
+            color: #4a4a4a;
+            font-size: 1.8em;
+            font-weight: 400;
+            margin-bottom: 50px;
+            letter-spacing: 0.5px;
+        }
+
+        .links-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .link-item {
+            border-bottom: 1px solid #e8e8e8;
+            padding: 18px 0;
+            text-align: center;
+        }
+
+        .link-item:first-child {
+            border-top: 1px solid #e8e8e8;
+        }
+
+        .link-item a {
+            color: #5a6c7d;
+            text-decoration: none;
+            font-size: 1.05em;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: color 0.2s ease;
+            display: inline-block;
+            line-height: 1.6;
+        }
+
+        .link-item a:hover {
+            color: #2d3e50;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 35px 30px
+
+	}
+
+            h1 {
+                font-size: 1.5em;
+            }
+
+            .link-item a {
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo-container">
+            <img src="towlogo.jpg" alt="Warhammer Old World Logo">
+        </div>
+
+        <div class="links-container">
+	    <div class="link-item">
+                <a href="https://owb.whfb.net/">Old World Builder - German Comp Ruleset</a>
+            </div>
+            <div class="link-item">
+                <a href="https://ow.whfb.net/apps/scenarios.php">Random Scenario Selector</a>
+            </div>
+	    <div class="link-item">
+                <a href="https://ow.whfb.net/apps/tablebuilder.html">Scenario Map Builder</a>
+            </div>
+            <div class="link-item">
+                <a href="https://ow.whfb.net/apps/templates.php">Template Hit Calculator</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

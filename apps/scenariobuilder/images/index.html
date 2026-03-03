@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tabletop Terrain Simulator - Fixed</title>
+        <link rel="stylesheet" href="tablebuilder.css">
+
+</head>
+<body>
+
+<div class="page-container">
+<div class="main-section">
+<div class="legend">
+<h3>Zones</h3>
+<div class="zones-container">
+<div class="zone-item"><div class="zone-tool red" data-color="red">🔴</div><div class="terrain-label">Red Zone</div></div>
+<div class="zone-item"><div class="zone-tool blue" data-color="blue">🔵</div><div class="terrain-label">Blue Zone</div></div>
+<div class="zone-item"><div class="zone-tool yellow" data-color="yellow">🟡</div><div class="terrain-label">Special Zone</div></div>
+
+<div class="zone-item"><div class="zone-tool red-diag" id="diagRedTool" data-color="red-diag">↗️🔴</div><div class="terrain-label">Red Diagonal</div></div>
+<div class="zone-item"><div class="zone-tool blue-diag" id="diagBlueTool" data-color="blue-diag">↗️🔵</div><div class="terrain-label">Blue Diagonal</div></div>
+</div>
+</div>
+<div class="legend">
+<h3>Terrain Features</h3>
+<div class="terrain-icon" data-terrain="hill" data-width="120" data-height="90"><img src="../images/ttb/hill.png" alt="Hill"></div>
+<div class="terrain-label">Hill (8"×6")</div>
+<div class="terrain-icon" data-terrain="forest" data-width="150" data-height="105"><img src="../images/ttb/forest.png" alt="Forest"></div>
+<div class="terrain-label">Forest (10"×7")</div>
+<div class="terrain-icon" data-terrain="building" data-width="90" data-height="75"><img src="../images/ttb/building.png" alt="Building"></div>
+<div class="terrain-label">Building (6"×5")</div>
+<div class="terrain-icon" data-terrain="field" data-width="105" data-height="105"><img src="../images/ttb/field.png" alt="Field"></div>
+<div class="terrain-label">Field (7"×7")</div>
+<div class="scale-info">Table: 72" × 48"<br>Scale: 15px = 1"</div>
+</div>
+<div class="tabletop-wrapper">
+<div class="tabletop-container">
+<div class="tabletop" id="tabletop"><canvas class="zone-canvas" id="zoneCanvas" width="1080" height="720"></canvas></div>
+</div>
+</div>
+<div class="legend">
+<h3>Tools</h3>
+<div class="measure-tool" id="measureTool">📏</div>
+<div class="terrain-label">Measure Tool</div>
+<div class="text-tool" id="textTool">📝</div>
+<div class="terrain-label">Text Tool</div>
+<div class="export-tool" id="exportTool">💾</div>
+<div class="terrain-label">Export Image</div>
+</div>
+<div class="legend">
+<h3>Instructions</h3>
+<div class="instructions">
+<strong>Instructions:</strong><br>
+• Click icon to place terrain<br>
+• Drag terrain to move<br>
+• Click terrain to select<br>
+• Press Delete to remove<br><br>
+<strong>Measure Tool:</strong><br>
+• Click to activate<br>
+• Drag at least 1" to create<br>
+• Drag text to reposition<br>
+• Drag endpoints to resize<br>
+• Click measure to select<br>
+• Delete to remove<br><br>
+<strong>Text Tool:</strong><br>
+• Click to activate<br>
+• Click table to place<br>
+• Type to add text<br>
+• Drag to move<br>
+• Drag corners to resize<br><br>
+<strong>Export Image:</strong><br>
+• Click to export table<br>
+• Saves as 2160×1440 PNG<br>
+• All elements included<br><br>
+<strong>Deployment Zones:</strong><br>
+• Click zone color to place<br>
+• Drag zone to move<br>
+• Drag corners to resize<br><br>
+<strong>Diagonal Zones:</strong><br>
+• Click Red/Blue Diagonal to place<br>
+• Drag white handles to reposition<br>
+• Click dashed line to select<br>
+• Delete to remove<br><br>
+<strong>Special Zone:</strong><br>
+• Yellow circle (max 18")<br>
+• Drag corners to resize
+</div>
+</div>
+</div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- Core utilities must load first -->
+    <script src="utils.js"></script>
+
+    <!-- Feature modules -->
+    <script src="terrain.js"></script>
+    <script src="zones.js"></script>
+    <script src="tools.js"></script>
+    <script src="diagonal.js"></script>
+    <script src="export.js"></script>
+
+    <!-- Event listeners must load last -->
+    <script src="events.js"></script>
+
+</body>
+</html>
