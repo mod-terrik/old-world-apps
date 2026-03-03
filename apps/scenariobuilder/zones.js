@@ -147,20 +147,25 @@ function handleZonePlacement(x, y) {
             const stopDistance = 12 * SCALE;
             
             if (activeTool.type === 'red') {
+                // Red diagonal from northeast (top-right corner)
+                // Create a polygon that covers the corner and stops 12" from center
                 zone.isDiagonal = true;
                 zone.diagonalType = 'northeast';
                 zone.points = [
-                    {x: canvas.width, y: 0},
-                    {x: canvas.width, y: centerY - stopDistance},
-                    {x: centerX + stopDistance, y: 0}
+                    {x: canvas.width, y: 0},                    // Top-right corner
+                    {x: canvas.width, y: centerY - stopDistance}, // Right edge, stop point
+                    {x: centerX + stopDistance, y: centerY - stopDistance}, // Diagonal stop point
+                    {x: centerX + stopDistance, y: 0}          // Top edge, stop point
                 ];
             } else if (activeTool.type === 'blue') {
+                // Blue diagonal from southwest (bottom-left corner)
                 zone.isDiagonal = true;
                 zone.diagonalType = 'southwest';
                 zone.points = [
-                    {x: 0, y: canvas.height},
-                    {x: 0, y: centerY + stopDistance},
-                    {x: centerX - stopDistance, y: canvas.height}
+                    {x: 0, y: canvas.height},                   // Bottom-left corner
+                    {x: 0, y: centerY + stopDistance},          // Left edge, stop point
+                    {x: centerX - stopDistance, y: centerY + stopDistance}, // Diagonal stop point
+                    {x: centerX - stopDistance, y: canvas.height} // Bottom edge, stop point
                 ];
             }
         } else {
