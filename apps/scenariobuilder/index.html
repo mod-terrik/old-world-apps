@@ -194,7 +194,7 @@
                 <li><strong>Measure Tool:</strong> Click to activate • Drag at least 1" to create • Drag text to reposition • Drag endpoints to resize • Click measure to select • Delete to remove</li>
                 <li><strong>Text Tool:</strong> Click to activate • Click table to place • Type to add text • Drag to move • Drag corners to resize</li>
                 <li><strong>Export Image:</strong> Click to export table • Saves as 2160×1440 PNG • All elements included</li>
-                <li><strong>Deployment Zones:</strong> Click zone color • Choose horizontal or diagonal • Click table to place • Drag to move • Diagonal zones extend from corner and stop 12" from center</li>
+                <li><strong>Deployment Zones:</strong> Click zone color • Choose horizontal or diagonal • Zone places automatically • Drag to move • Diagonal zones extend from corner and stop 12" from center</li>
             </ul>
         </div>
     </div>
@@ -216,14 +216,12 @@
     });
 
     document.getElementById('redZoneTypeSelect').addEventListener('change', (e) => {
-        activeTool = {
-            category: 'zone',
-            type: 'red',
-            zoneType: e.target.value
-        };
+        const zoneType = e.target.value;
         document.getElementById('redZoneTypeSelect').style.display = 'none';
         document.querySelectorAll('.zone-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById('redZoneBtn').classList.add('active');
+        
+        // Create zone immediately
+        createZoneImmediately('red', zoneType);
     });
 
     document.getElementById('blueZoneBtn').addEventListener('click', () => {
@@ -232,15 +230,67 @@
     });
 
     document.getElementById('blueZoneTypeSelect').addEventListener('change', (e) => {
-        activeTool = {
-            category: 'zone',
-            type: 'blue',
-            zoneType: e.target.value
-        };
+        const zoneType = e.target.value;
         document.getElementById('blueZoneTypeSelect').style.display = 'none';
         document.querySelectorAll('.zone-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById('blueZoneBtn').classList.add('active');
+        
+        // Create zone immediately
+        createZoneImmediately('blue', zoneType);
     });
+
+    function createZoneImmediately(type, zoneType) {
+        const zone = {
+            type: type,
+            category: 'zone'
+        };
+        
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const stopDistance = 12 * SCALE;
+        
+        if (zoneType === 'diagonal') {
+            if (type === 'red') {
+                // Red diagonal from northwest (top-left corner)
+                zone.isDiagonal = true;
+                zone.diagonalType = 'northwest';
+                zone.points = [
+                    {x: 0, y: 0},                              // Top-left corner
+                    {x: 0, y: centerY - stopDistance},         // Left edge, stop point
+                    {x: centerX - stopDistance, y: centerY - stopDistance}, // Diagonal stop point
+                    {x: centerX - stopDistance, y: 0}          // Top edge, stop point
+                ];
+            } else if (type === 'blue') {
+                // Blue diagonal from southeast (bottom-right corner)
+                zone.isDiagonal = true;
+                zone.diagonalType = 'southeast';
+                zone.points = [
+                    {x: canvas.width, y: canvas.height},       // Bottom-right corner
+                    {x: canvas.width, y: centerY + stopDistance}, // Right edge, stop point
+                    {x: centerX + stopDistance, y: centerY + stopDistance}, // Diagonal stop point
+                    {x: centerX + stopDistance, y: canvas.height} // Bottom edge, stop point
+                ];
+            }
+        } else {
+            // Horizontal zones
+            const width = 72 * SCALE;
+            const height = 12 * SCALE;
+            
+            if (type === 'red') {
+                zone.x = 0;
+                zone.y = 0;
+                zone.width = Math.min(width, canvas.width);
+                zone.height = Math.min(height, canvas.height);
+            } else if (type === 'blue') {
+                zone.width = Math.min(width, canvas.width);
+                zone.height = Math.min(height, canvas.height);
+                zone.x = canvas.width - zone.width;
+                zone.y = canvas.height - zone.height;
+            }
+        }
+        
+        zones.push(zone);
+        render();
+    }
 </script>
 <script src="terrain.js"></script>
 <script src="zones.js"></script>
