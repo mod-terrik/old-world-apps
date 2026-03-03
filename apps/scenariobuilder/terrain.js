@@ -430,6 +430,7 @@ function handleTerrainPlacement(x, y) {
             shapeSelect.style.display = 'none';
             activeTool = null;
             document.querySelectorAll('.terrain-btn').forEach(b => b.classList.remove('active'));
+            updateCursor();
             return true;
         }
         
@@ -444,6 +445,7 @@ function handleTerrainPlacement(x, y) {
         });
         activeTool = null;
         document.querySelectorAll('.terrain-btn').forEach(b => b.classList.remove('active'));
+        updateCursor();
         return true;
     }
     return false;
