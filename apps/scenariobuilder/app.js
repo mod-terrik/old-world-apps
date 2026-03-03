@@ -186,11 +186,13 @@ canvas.addEventListener('mousedown', (e) => {
         return;
     }
     
-    // Check for measure endpoint dragging
+    // Check for measure endpoint dragging first (higher priority)
     const endpointData = checkMeasureEndpoints(x, y);
     if (endpointData) {
         dragging = true;
+        selectedItem = endpointData.measure;
         dragOffset = endpointData;
+        render();
         return;
     }
     
@@ -227,7 +229,15 @@ canvas.addEventListener('mousedown', (e) => {
     if (clicked) {
         selectedItem = clicked;
         dragging = true;
-        dragOffset = { x: x - (clicked.x || 0), y: y - (clicked.y || 0) };
+        
+        // For measure lines, store the offset from the midpoint
+        if (clicked.category === 'measure') {
+            const midX = (clicked.x1 + clicked.x2) / 2;
+            const midY = (clicked.y1 + clicked.y2) / 2;
+            dragOffset = { x: x - midX, y: y - midY, isMeasureLine: true };
+        } else {
+            dragOffset = { x: x - (clicked.x || 0), y: y - (clicked.y || 0) };
+        }
         render();
         return;
     }
@@ -257,18 +267,37 @@ canvas.addEventListener('mousemove', (e) => {
         constrainToCanvas(selectedItem);
         render();
     } else if (dragging && dragOffset.measure) {
+        // Dragging measure endpoint
         handleMeasureEndpointDrag(x, y, dragOffset);
         constrainToCanvas(dragOffset.measure);
         render();
     } else if (dragging && selectedItem) {
-        if (selectedItem.category === 'text') {
+        if (selectedItem.category === 'measure' && dragOffset.isMeasureLine) {
+            // Dragging entire measure line
+            const midX = x - dragOffset.x;
+            const midY = y - dragOffset.y;
+            
+            const currentMidX = (selectedItem.x1 + selectedItem.x2) / 2;
+            const currentMidY = (selectedItem.y1 + selectedItem.y2) / 2;
+            
+            const deltaX = midX - currentMidX;
+            const deltaY = midY - currentMidY;
+            
+            selectedItem.x1 += deltaX;
+            selectedItem.y1 += deltaY;
+            selectedItem.x2 += deltaX;
+            selectedItem.y2 += deltaY;
+            
+            constrainToCanvas(selectedItem);
+        } else if (selectedItem.category === 'text') {
             selectedItem.x = x - dragOffset.x;
             selectedItem.y = y - dragOffset.y;
+            constrainToCanvas(selectedItem);
         } else {
             selectedItem.x = x - dragOffset.x;
             selectedItem.y = y - dragOffset.y;
+            constrainToCanvas(selectedItem);
         }
-        constrainToCanvas(selectedItem);
         render();
     }
 });
@@ -306,6 +335,26 @@ canvas.addEventListener('mouseup', (e) => {
     resizing = false;
     dragOffset = {};
     resizeCorner = null;
+});
+
+// Add mouseleave event to auto-release when mouse leaves canvas
+canvas.addEventListener('mouseleave', () => {
+    if (measureStart) {
+        // Cancel measure creation if mouse leaves while creating
+        measureStart = null;
+        activeTool = null;
+        document.getElementById('measureBtn').classList.remove('active');
+        render();
+    }
+    
+    if (dragging || resizing) {
+        // Release any dragging or resizing operation
+        dragging = false;
+        resizing = false;
+        dragOffset = {};
+        resizeCorner = null;
+        render();
+    }
 });
 
 document.addEventListener('keydown', (e) => {
