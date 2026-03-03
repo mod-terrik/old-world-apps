@@ -133,6 +133,7 @@ function handleZonePlacement(x, y) {
             zones.push(zone);
             activeTool = null;
             document.querySelectorAll('.zone-btn').forEach(b => b.classList.remove('active'));
+            updateCursor();
             return true;
         }
         
@@ -214,6 +215,7 @@ function handleZonePlacement(x, y) {
         zones.push(zone);
         activeTool = null;
         document.querySelectorAll('.zone-btn').forEach(b => b.classList.remove('active'));
+        updateCursor();
         return true;
     }
     return false;
