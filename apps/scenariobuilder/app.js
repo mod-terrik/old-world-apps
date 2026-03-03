@@ -48,9 +48,9 @@ function constrainToCanvas(obj) {
 // Update cursor based on active tool
 function updateCursor() {
     if (activeTool) {
-        canvas.style.cursor = 'crosshair';
+        canvas.style.setProperty('cursor', 'crosshair', 'important');
     } else {
-        canvas.style.cursor = 'default';
+        canvas.style.setProperty('cursor', 'default', 'important');
     }
 }
 
@@ -92,7 +92,7 @@ function render() {
 // Event handlers
 document.querySelectorAll('.zone-btn').forEach(btn => {
     // Skip red and blue zone buttons - they have their own dropdown handlers in index.html
-    if (btn.id === 'redZoneBtn' || btn.id === 'blueZoneBtn') {
+    if (btn.id === 'redZoneBtn' || btn.id === 'blueZoneBtn' || btn.id === 'redDiagonalBtn' || btn.id === 'blueDiagonalBtn') {
         return;
     }
     
@@ -422,3 +422,6 @@ animate();
 
 // Initial render
 render();
+
+// Set initial cursor
+updateCursor();
