@@ -347,8 +347,18 @@ canvas.addEventListener('mouseleave', () => {
         render();
     }
     
-    if (dragging || resizing) {
-        // Release any dragging or resizing operation
+    if (dragging && dragOffset.measure) {
+        // If dragging a measure endpoint, constrain it to canvas edge and finalize
+        constrainToCanvas(dragOffset.measure);
+        updateMeasureDistance(dragOffset.measure);
+        dragging = false;
+        dragOffset = {};
+        render();
+    } else if (dragging || resizing) {
+        // For other objects, just release the drag/resize
+        if (selectedItem) {
+            constrainToCanvas(selectedItem);
+        }
         dragging = false;
         resizing = false;
         dragOffset = {};
