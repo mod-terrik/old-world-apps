@@ -70,9 +70,9 @@ function render() {
     // Draw zones FIRST so they appear underneath everything else
     zones.forEach(drawZone);
     
-    // Draw measurement lines for special zones (both circles and squares)
+    // Draw measurement lines for ALL circular zones and special feature squares
     zones.forEach(zone => {
-        if (zone.isSpecialFeature) {
+        if (zone.isCircle || zone.isSpecialFeature) {
             drawZoneMeasurementLines(zone);
         }
     });
