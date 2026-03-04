@@ -45,6 +45,10 @@ function drawZone(zone) {
             ctx.fillStyle = 'white';
             ctx.textAlign = 'center';
             ctx.fillText(labelText, zone.x + zone.radius, zone.y + zone.radius + 4);
+            
+            // Draw resize handle for circular zones (bottom-right of bounding box)
+            ctx.fillStyle = '#e74c3c';
+            ctx.fillRect(zone.x + zone.radius * 2 - 5, zone.y + zone.radius * 2 - 5, 10, 10);
         } else {
             ctx.fillStyle = 'white';
             ctx.font = 'bold 14px Arial';
@@ -64,7 +68,8 @@ function drawZone(zone) {
             ctx.fillStyle = '#e74c3c';
             if (zone.type === 'blue') {
                 ctx.fillRect(zone.x - 5, zone.y - 5, 10, 10);
-            } else if (!zone.isSpecialFeature) {
+            } else {
+                // Draw resize handle for all rectangular zones (special features and others)
                 ctx.fillRect(zone.x + zone.width - 5, zone.y + zone.height - 5, 10, 10);
             }
             
@@ -114,9 +119,24 @@ function isPointInZone(x, y, zone) {
 
 function getZoneCorner(x, y, zone) {
     const cornerSize = 10;
-    if (zone.isCircle || zone.isDiagonal || zone.isSpecialFeature) {
+    
+    if (zone.isDiagonal) {
+        // Diagonal zones cannot be resized
         return null;
+    } else if (zone.isCircle) {
+        // Check for resize handle at bottom-right of circle's bounding box
+        if (Math.abs(x - (zone.x + zone.radius * 2)) < cornerSize && 
+            Math.abs(y - (zone.y + zone.radius * 2)) < cornerSize) {
+            return 'se';
+        }
+    } else if (zone.type === 'blue') {
+        // Blue zone resizes from top-left
+        if (Math.abs(x - zone.x) < cornerSize && 
+            Math.abs(y - zone.y) < cornerSize) {
+            return 'nw';
+        }
     } else {
+        // All other rectangular zones (red, special features) resize from bottom-right
         if (Math.abs(x - (zone.x + zone.width)) < cornerSize && 
             Math.abs(y - (zone.y + zone.height)) < cornerSize) {
             return 'se';
@@ -231,20 +251,39 @@ function checkZoneClick(x, y) {
 }
 
 function handleZoneResize(x, y, zone) {
-    if (!zone.isCircle && !zone.isDiagonal && !zone.isSpecialFeature) {
+    if (zone.isDiagonal) {
+        // Diagonal zones cannot be resized
+        return;
+    }
+    
+    if (zone.isCircle) {
+        // Resize circular zones by adjusting radius
+        // Calculate distance from current position to top-left corner
+        const newWidth = x - zone.x;
+        const newHeight = y - zone.y;
+        
+        // Use the average of width and height to maintain circular shape
+        const newDiameter = (newWidth + newHeight) / 2;
+        const newRadius = Math.max(SCALE / 2, newDiameter / 2); // Minimum 0.5" radius
+        
+        zone.radius = newRadius;
+    } else {
+        // Resize rectangular zones
         x = Math.max(0, Math.min(x, canvas.width));
         y = Math.max(0, Math.min(y, canvas.height));
         
         if (resizeCorner === 'se') {
-            zone.width = x - zone.x;
-            zone.height = y - zone.y;
+            zone.width = Math.max(SCALE, x - zone.x); // Minimum 1"
+            zone.height = Math.max(SCALE, y - zone.y);
         } else if (resizeCorner === 'nw') {
             const newWidth = zone.width + (zone.x - x);
             const newHeight = zone.height + (zone.y - y);
-            zone.x = x;
-            zone.y = y;
-            zone.width = newWidth;
-            zone.height = newHeight;
+            if (newWidth > SCALE && newHeight > SCALE) {
+                zone.x = x;
+                zone.y = y;
+                zone.width = newWidth;
+                zone.height = newHeight;
+            }
         }
     }
 }
