@@ -43,8 +43,9 @@
             flex-shrink: 0;
             display: flex;
             flex-direction: column;
-            height: fit-content;
-            min-height: 768px;
+            height: 728px;
+            max-height: 728px;
+            overflow-y: auto;
         }
 
         .canvas-area {
@@ -60,9 +61,6 @@
 
         .section:last-child {
             margin-bottom: 0;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
         }
 
         .section h3 {
