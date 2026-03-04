@@ -70,9 +70,9 @@ function render() {
     // Draw zones FIRST so they appear underneath everything else
     zones.forEach(drawZone);
     
-    // Draw measurement lines for special zones
+    // Draw measurement lines for special zones (both circles and squares)
     zones.forEach(zone => {
-        if (zone.isCircle) {
+        if (zone.isSpecialFeature) {
             drawZoneMeasurementLines(zone);
         }
     });
@@ -137,33 +137,8 @@ document.getElementById('textBtn').addEventListener('click', () => {
 
 document.getElementById('exportBtn').addEventListener('click', exportImage);
 
-// Special handler for Special Feature button
-document.getElementById('specialFeatureBtn').addEventListener('click', (e) => {
-    e.stopPropagation(); // Prevent click-elsewhere handler
-    const shapeSelect = document.getElementById('specialShapeSelect');
-    shapeSelect.style.display = 'block';
-    activeTool = {
-        category: 'terrain',
-        type: 'special'
-    };
-    document.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
-    document.getElementById('specialFeatureBtn').classList.add('active');
-    updateCursor();
-});
-
-// Prevent dropdown from closing when clicking on it
-document.getElementById('specialShapeSelect').addEventListener('click', (e) => {
-    e.stopPropagation();
-});
-
-// Hide dropdown when clicking elsewhere
-document.addEventListener('click', (e) => {
-    const shapeSelect = document.getElementById('specialShapeSelect');
-    const specialBtn = document.getElementById('specialFeatureBtn');
-    if (e.target !== shapeSelect && e.target !== specialBtn) {
-        shapeSelect.style.display = 'none';
-    }
-});
+// REMOVED: Old special feature button handler that was setting activeTool
+// Special features are now handled entirely in index.html via dropdown selection
 
 canvas.addEventListener('mousedown', (e) => {
     const rect = canvas.getBoundingClientRect();
