@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conquest</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Conquest</h1>
+<h2>Scenario Special Rules:</h2>
+<ul>
+  <li>Baggage Trains</li>
+  <li>Objectives (3)</li>
+</ul>
+
+<h2>Victory! </h2>
+<ul>
+  <li>Slay the foe: Score victory points for fleeing or destroyed units at the end of the battle equal to half of their points cost, rounded up.</li>
+  <li>The foe is routed! :  Score victory points for units at 25% or less than their starting unit strength are worth 25% of their points cost, rounded up.</li>
+  <li>Slay the Beasts!: Units with the Subtype of MONSTER that has less than or equal to 25% of their starting wounds are worth half their points cost, rounded up.</li>
+  <li>Bring me his Head! : Earn 200 additional victory points if the enemy general is slain.</li>
+  <li>Break Their Spirit! : Earn an additional 100 victory points if the enemy Battle Standard Bearer has been claimed as a trophy.</li>
+  <li>Trophies of war: Gain an additional 50 victory points for every enemy unit standard claimed as a trophy.</li>
+  <li>Critical Asset: Baggage Trains. Controlling your own baggage train at the end of the game is worth 200 victory points. Destroying your opponent’s baggage train is Worth 300 victory points</li>
+  <li>Strategic Assets: Starting on the second battle round, at the end of each player’s turn that player scores additional victory points based on how many objective markers they hold. For each of the following criteria that a player fulfills they score 100 victory points:</li>
+  <ul><li>Hold 1 or more objective markers.</li>
+	  <li>Hold more objective markers than their opponent.</li></ul>
+</ul>
+
+</body>
+</html>
