@@ -19,7 +19,7 @@
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
         }
 
@@ -39,7 +39,7 @@
             background: #34495e;
             padding: 15px;
             border-radius: 8px;
-            width: 300px;
+            width: 450px;
             flex-shrink: 0;
             display: flex;
             flex-direction: column;
@@ -79,6 +79,7 @@
             border-radius: 5px;
             cursor: pointer;
             font-size: 14px;
+            width: fit-content;
         }
 
         .btn:hover {
@@ -128,8 +129,12 @@
         .special-feature-wrapper {
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 10px;
             position: relative;
+        }
+
+        #specialFeatureBtn {
+            flex-shrink: 0;
         }
 
         .zone-select {
@@ -142,6 +147,7 @@
             cursor: pointer;
             font-size: 14px;
             white-space: nowrap;
+            flex-shrink: 0;
         }
 
         .zone-select:hover {
