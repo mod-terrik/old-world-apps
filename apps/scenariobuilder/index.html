@@ -126,9 +126,9 @@
         .zone-select {
             display: none;
             position: absolute;
-            left: 10px;
-            top: 100%;
-            margin-top: 5px;
+            left: 100%;
+            top: 0;
+            margin-left: 5px;
             padding: 8px;
             background: #3498db;
             color: white;
@@ -234,12 +234,55 @@
     document.getElementById('specialFeatureBtn').addEventListener('click', () => {
         const shapeSelect = document.getElementById('specialShapeSelect');
         shapeSelect.style.display = 'inline-block';
-        activeTool = {
-            category: 'terrain',
-            type: 'special'
-        };
-        document.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
-        document.getElementById('specialFeatureBtn').classList.add('active');
+        shapeSelect.focus();
+    });
+
+    // Handle special feature shape selection
+    document.getElementById('specialShapeSelect').addEventListener('change', (e) => {
+        const shape = e.target.value;
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        
+        if (shape === 'circle') {
+            // Create circle with 5" diameter (2.5" radius)
+            const radius = 2.5 * SCALE;
+            const zone = {
+                type: 'special',
+                category: 'zone',
+                isCircle: true,
+                x: centerX,
+                y: centerY,
+                radius: radius
+            };
+            zones.push(zone);
+        } else if (shape === 'square') {
+            // Create 6"x6" square centered
+            const size = 6 * SCALE;
+            const zone = {
+                type: 'special',
+                category: 'zone',
+                x: centerX - size / 2,
+                y: centerY - size / 2,
+                width: size,
+                height: size
+            };
+            zones.push(zone);
+        }
+        
+        // Hide dropdown and reset
+        e.target.style.display = 'none';
+        e.target.selectedIndex = 0;
+        
+        render();
+    });
+
+    // Hide dropdown when clicking elsewhere
+    document.addEventListener('click', (e) => {
+        const shapeSelect = document.getElementById('specialShapeSelect');
+        const specialBtn = document.getElementById('specialFeatureBtn');
+        if (e.target !== shapeSelect && e.target !== specialBtn) {
+            shapeSelect.style.display = 'none';
+        }
     });
 
     // Helper function to check if a zone already exists
