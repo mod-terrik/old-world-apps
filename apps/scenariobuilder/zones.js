@@ -2,12 +2,12 @@
 const zoneColors = {
     red: 'rgba(200, 0, 0, 0.5)',
     blue: 'rgba(0, 50, 150, 0.5)',
-    special: 'rgba(230, 226, 22, 0.75)',
+    objective: 'rgba(230, 226, 22, 0.75)',
     specialFeature: 'rgba(138, 43, 226, 0.6)'
 };
 
 function drawZone(zone) {
-    // Use specialFeature color for special features, regular special color for objective markers
+    // Use specialFeature color for special features, objective color for objective markers
     const colorKey = zone.isSpecialFeature ? 'specialFeature' : zone.type;
     ctx.fillStyle = zoneColors[colorKey];
     
@@ -132,7 +132,7 @@ function handleZonePlacement(x, y) {
             category: 'zone'
         };
         
-        if (activeTool.type === 'special') {
+        if (activeTool.type === 'objective') {
             // Yellow objective marker - click to place with 3.5" diameter
             const radius = 3.5 * SCALE / 2; // 3.5" diameter = 1.75" radius
             zone.x = x - radius;
