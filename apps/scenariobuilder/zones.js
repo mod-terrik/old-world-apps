@@ -64,7 +64,7 @@ function drawZone(zone) {
             ctx.fillStyle = '#e74c3c';
             if (zone.type === 'blue') {
                 ctx.fillRect(zone.x - 5, zone.y - 5, 10, 10);
-            } else {
+            } else if (!zone.isSpecialFeature) {
                 ctx.fillRect(zone.x + zone.width - 5, zone.y + zone.height - 5, 10, 10);
             }
             
@@ -114,7 +114,7 @@ function isPointInZone(x, y, zone) {
 
 function getZoneCorner(x, y, zone) {
     const cornerSize = 10;
-    if (zone.isCircle || zone.isDiagonal) {
+    if (zone.isCircle || zone.isDiagonal || zone.isSpecialFeature) {
         return null;
     } else {
         if (Math.abs(x - (zone.x + zone.width)) < cornerSize && 
@@ -228,7 +228,7 @@ function checkZoneClick(x, y) {
 }
 
 function handleZoneResize(x, y, zone) {
-    if (!zone.isCircle && !zone.isDiagonal) {
+    if (!zone.isCircle && !zone.isDiagonal && !zone.isSpecialFeature) {
         x = Math.max(0, Math.min(x, canvas.width));
         y = Math.max(0, Math.min(y, canvas.height));
         
@@ -247,77 +247,151 @@ function handleZoneResize(x, y, zone) {
 }
 
 function drawZoneMeasurementLines(zone) {
-    if (!zone.isCircle) return;
-    
-    const centerX = zone.x + zone.radius;
-    const centerY = zone.y + zone.radius;
-    const distanceToLeft = centerX / SCALE;
-    const distanceToTop = centerY / SCALE;
-    const distanceToRight = (canvas.width - centerX) / SCALE;
-    const distanceToBottom = (canvas.height - centerY) / SCALE;
-    
-    const closestHorizontal = distanceToLeft < distanceToRight ? 'left' : 'right';
-    const closestVertical = distanceToTop < distanceToBottom ? 'top' : 'bottom';
-    
-    ctx.strokeStyle = 'white';
-    ctx.lineWidth = 1;
-    ctx.setLineDash([5, 5]);
-    
-    if (closestHorizontal === 'left') {
-        const lineY = centerY;
-        ctx.beginPath();
-        ctx.moveTo(0, lineY);
-        ctx.lineTo(zone.x, lineY);
-        ctx.stroke();
+    // Draw measurement lines for both circles and special feature squares
+    if (zone.isCircle) {
+        const centerX = zone.x + zone.radius;
+        const centerY = zone.y + zone.radius;
+        const distanceToLeft = centerX / SCALE;
+        const distanceToTop = centerY / SCALE;
+        const distanceToRight = (canvas.width - centerX) / SCALE;
+        const distanceToBottom = (canvas.height - centerY) / SCALE;
         
-        ctx.fillStyle = 'white';
-        ctx.font = 'bold 12px Arial';
-        ctx.textAlign = 'center';
-        ctx.fillText(distanceToLeft.toFixed(1) + '"', zone.x / 2, lineY - 5);
-    } else {
-        const lineY = centerY;
-        ctx.beginPath();
-        ctx.moveTo(zone.x + zone.radius * 2, lineY);
-        ctx.lineTo(canvas.width, lineY);
-        ctx.stroke();
+        const closestHorizontal = distanceToLeft < distanceToRight ? 'left' : 'right';
+        const closestVertical = distanceToTop < distanceToBottom ? 'top' : 'bottom';
         
-        ctx.fillStyle = 'white';
-        ctx.font = 'bold 12px Arial';
-        ctx.textAlign = 'center';
-        ctx.fillText(distanceToRight.toFixed(1) + '"', zone.x + zone.radius * 2 + (canvas.width - (zone.x + zone.radius * 2)) / 2, lineY - 5);
+        ctx.strokeStyle = 'white';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([5, 5]);
+        
+        if (closestHorizontal === 'left') {
+            const lineY = centerY;
+            ctx.beginPath();
+            ctx.moveTo(0, lineY);
+            ctx.lineTo(zone.x, lineY);
+            ctx.stroke();
+            
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 12px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(distanceToLeft.toFixed(1) + '"', zone.x / 2, lineY - 5);
+        } else {
+            const lineY = centerY;
+            ctx.beginPath();
+            ctx.moveTo(zone.x + zone.radius * 2, lineY);
+            ctx.lineTo(canvas.width, lineY);
+            ctx.stroke();
+            
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 12px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(distanceToRight.toFixed(1) + '"', zone.x + zone.radius * 2 + (canvas.width - (zone.x + zone.radius * 2)) / 2, lineY - 5);
+        }
+        
+        if (closestVertical === 'top') {
+            const lineX = centerX;
+            ctx.beginPath();
+            ctx.moveTo(lineX, 0);
+            ctx.lineTo(lineX, zone.y);
+            ctx.stroke();
+            
+            ctx.save();
+            ctx.translate(lineX + 10, zone.y / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 12px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(distanceToTop.toFixed(1) + '"', 0, 0);
+            ctx.restore();
+        } else {
+            const lineX = centerX;
+            ctx.beginPath();
+            ctx.moveTo(lineX, zone.y + zone.radius * 2);
+            ctx.lineTo(lineX, canvas.height);
+            ctx.stroke();
+            
+            ctx.save();
+            ctx.translate(lineX + 10, zone.y + zone.radius * 2 + (canvas.height - (zone.y + zone.radius * 2)) / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 12px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(distanceToBottom.toFixed(1) + '"', 0, 0);
+            ctx.restore();
+        }
+        
+        ctx.setLineDash([]);
+    } else if (zone.isSpecialFeature && !zone.isCircle) {
+        // Draw measurement lines for special feature squares
+        const centerX = zone.x + zone.width / 2;
+        const centerY = zone.y + zone.height / 2;
+        const distanceToLeft = centerX / SCALE;
+        const distanceToTop = centerY / SCALE;
+        const distanceToRight = (canvas.width - centerX) / SCALE;
+        const distanceToBottom = (canvas.height - centerY) / SCALE;
+        
+        const closestHorizontal = distanceToLeft < distanceToRight ? 'left' : 'right';
+        const closestVertical = distanceToTop < distanceToBottom ? 'top' : 'bottom';
+        
+        ctx.strokeStyle = 'white';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([5, 5]);
+        
+        if (closestHorizontal === 'left') {
+            const lineY = centerY;
+            ctx.beginPath();
+            ctx.moveTo(0, lineY);
+            ctx.lineTo(zone.x, lineY);
+            ctx.stroke();
+            
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 12px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(distanceToLeft.toFixed(1) + '"', zone.x / 2, lineY - 5);
+        } else {
+            const lineY = centerY;
+            ctx.beginPath();
+            ctx.moveTo(zone.x + zone.width, lineY);
+            ctx.lineTo(canvas.width, lineY);
+            ctx.stroke();
+            
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 12px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(distanceToRight.toFixed(1) + '"', zone.x + zone.width + (canvas.width - (zone.x + zone.width)) / 2, lineY - 5);
+        }
+        
+        if (closestVertical === 'top') {
+            const lineX = centerX;
+            ctx.beginPath();
+            ctx.moveTo(lineX, 0);
+            ctx.lineTo(lineX, zone.y);
+            ctx.stroke();
+            
+            ctx.save();
+            ctx.translate(lineX + 10, zone.y / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 12px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(distanceToTop.toFixed(1) + '"', 0, 0);
+            ctx.restore();
+        } else {
+            const lineX = centerX;
+            ctx.beginPath();
+            ctx.moveTo(lineX, zone.y + zone.height);
+            ctx.lineTo(lineX, canvas.height);
+            ctx.stroke();
+            
+            ctx.save();
+            ctx.translate(lineX + 10, zone.y + zone.height + (canvas.height - (zone.y + zone.height)) / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 12px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(distanceToBottom.toFixed(1) + '"', 0, 0);
+            ctx.restore();
+        }
+        
+        ctx.setLineDash([]);
     }
-    
-    if (closestVertical === 'top') {
-        const lineX = centerX;
-        ctx.beginPath();
-        ctx.moveTo(lineX, 0);
-        ctx.lineTo(lineX, zone.y);
-        ctx.stroke();
-        
-        ctx.save();
-        ctx.translate(lineX + 10, zone.y / 2);
-        ctx.rotate(-Math.PI / 2);
-        ctx.fillStyle = 'white';
-        ctx.font = 'bold 12px Arial';
-        ctx.textAlign = 'center';
-        ctx.fillText(distanceToTop.toFixed(1) + '"', 0, 0);
-        ctx.restore();
-    } else {
-        const lineX = centerX;
-        ctx.beginPath();
-        ctx.moveTo(lineX, zone.y + zone.radius * 2);
-        ctx.lineTo(lineX, canvas.height);
-        ctx.stroke();
-        
-        ctx.save();
-        ctx.translate(lineX + 10, zone.y + zone.radius * 2 + (canvas.height - (zone.y + zone.radius * 2)) / 2);
-        ctx.rotate(-Math.PI / 2);
-        ctx.fillStyle = 'white';
-        ctx.font = 'bold 12px Arial';
-        ctx.textAlign = 'center';
-        ctx.fillText(distanceToBottom.toFixed(1) + '"', 0, 0);
-        ctx.restore();
-    }
-    
-    ctx.setLineDash([]);
 }
