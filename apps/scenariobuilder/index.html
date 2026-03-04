@@ -46,6 +46,8 @@
             height: 728px;
             max-height: 728px;
             overflow-y: auto;
+            overflow-x: visible;
+            position: relative;
         }
 
         .canvas-area {
@@ -124,25 +126,22 @@
         }
 
         .special-feature-wrapper {
-            display: inline-block;
+            display: flex;
+            align-items: center;
+            gap: 5px;
             position: relative;
-            vertical-align: top;
         }
 
         .zone-select {
             display: none;
-            position: absolute;
-            left: calc(100% + 5px);
-            top: 50%;
-            transform: translateY(-50%);
-            padding: 8px;
+            padding: 8px 12px;
             background: #3498db;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
             font-size: 14px;
-            z-index: 1000;
+            white-space: nowrap;
         }
 
         .zone-select:hover {
