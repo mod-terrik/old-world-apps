@@ -127,18 +127,21 @@ function getZoneCorner(x, y, zone) {
 
 function handleZonePlacement(x, y) {
     if (activeTool && activeTool.category === 'zone') {
-        // Remove the special feature click-to-place functionality
-        // Special features are now only placed via dropdown selection
-        if (activeTool.type === 'special') {
-            return false;
-        }
-        
         const zone = {
             type: activeTool.type,
             category: 'zone'
         };
         
-        if (activeTool.zoneType === 'diagonal') {
+        if (activeTool.type === 'special') {
+            // Yellow objective marker - click to place with 3.5" diameter
+            const radius = 3.5 * SCALE / 2; // 3.5" diameter = 1.75" radius
+            zone.x = x - radius;
+            zone.y = y - radius;
+            zone.width = 150;
+            zone.height = 150;
+            zone.isCircle = true;
+            zone.radius = radius;
+        } else if (activeTool.zoneType === 'diagonal') {
             const centerX = canvas.width / 2;   // 540px = 36"
             const centerY = canvas.height / 2;  // 360px = 24"
             const perpDistance = 12 * SCALE;    // 180px = 12"
