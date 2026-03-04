@@ -123,12 +123,18 @@
             position: relative;
         }
 
+        .special-feature-wrapper {
+            display: inline-block;
+            position: relative;
+            vertical-align: top;
+        }
+
         .zone-select {
             display: none;
             position: absolute;
-            left: 100%;
-            top: 0;
-            margin-left: 5px;
+            left: calc(100% + 5px);
+            top: 50%;
+            transform: translateY(-50%);
             padding: 8px;
             background: #3498db;
             color: white;
@@ -190,9 +196,10 @@
                 <div class="section">
                     <h3>Objectives</h3>
                     <button class="btn zone-btn" data-zone="special">🟡 Objective Marker</button>
-                    <div style="display: inline-block; position: relative; vertical-align: top;">
+                    <div class="special-feature-wrapper">
                         <button class="btn" id="specialFeatureBtn">🟣 Special Feature</button>
                         <select id="specialShapeSelect" class="zone-select">
+                            <option value="">Select shape...</option>
                             <option value="circle">Circle (5")</option>
                             <option value="square">Square (6"×6")</option>
                         </select>
@@ -240,6 +247,8 @@
     // Handle special feature shape selection
     document.getElementById('specialShapeSelect').addEventListener('change', (e) => {
         const shape = e.target.value;
+        if (!shape) return; // Skip if "Select shape..." is chosen
+        
         const centerX = canvas.width / 2;
         const centerY = canvas.height / 2;
         
@@ -250,8 +259,8 @@
                 type: 'special',
                 category: 'zone',
                 isCircle: true,
-                x: centerX,
-                y: centerY,
+                x: centerX - radius,
+                y: centerY - radius,
                 radius: radius
             };
             zones.push(zone);
@@ -280,8 +289,10 @@
     document.addEventListener('click', (e) => {
         const shapeSelect = document.getElementById('specialShapeSelect');
         const specialBtn = document.getElementById('specialFeatureBtn');
-        if (e.target !== shapeSelect && e.target !== specialBtn) {
+        const wrapper = document.querySelector('.special-feature-wrapper');
+        if (!wrapper.contains(e.target)) {
             shapeSelect.style.display = 'none';
+            shapeSelect.selectedIndex = 0;
         }
     });
 
