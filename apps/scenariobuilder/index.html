@@ -206,7 +206,7 @@
                 <div class="section">
                     <h3>Objectives</h3>
                     <div class="objectives-buttons">
-                        <button class="btn zone-btn" data-zone="special">🟡 Objective Marker</button>
+                        <button class="btn zone-btn" data-zone="objective">🟡 Objective Marker</button>
                         <div class="special-feature-wrapper">
                             <button class="btn" id="specialFeatureBtn">🟣 Special Feature</button>
                             <select id="specialShapeSelect" class="zone-select">
@@ -268,7 +268,7 @@
             // Create circle with 5" diameter (2.5" radius)
             const radius = 2.5 * SCALE;
             const zone = {
-                type: 'special',
+                type: 'specialFeature',
                 category: 'zone',
                 isCircle: true,
                 isSpecialFeature: true,
@@ -281,7 +281,7 @@
             // Create 6"x6" square centered
             const size = 6 * SCALE;
             const zone = {
-                type: 'special',
+                type: 'specialFeature',
                 category: 'zone',
                 isSpecialFeature: true,
                 x: centerX - size / 2,
