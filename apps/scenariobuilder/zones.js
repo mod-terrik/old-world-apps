@@ -2,11 +2,14 @@
 const zoneColors = {
     red: 'rgba(200, 0, 0, 0.5)',
     blue: 'rgba(0, 50, 150, 0.5)',
-    special: 'rgba(230, 226, 22, 0.75)'
+    special: 'rgba(230, 226, 22, 0.75)',
+    specialFeature: 'rgba(138, 43, 226, 0.6)'
 };
 
 function drawZone(zone) {
-    ctx.fillStyle = zoneColors[zone.type];
+    // Use specialFeature color for special features, regular special color for objective markers
+    const colorKey = zone.isSpecialFeature ? 'specialFeature' : zone.type;
+    ctx.fillStyle = zoneColors[colorKey];
     
     if (zone.isDiagonal) {
         ctx.beginPath();
@@ -47,7 +50,8 @@ function drawZone(zone) {
             ctx.font = 'bold 14px Arial';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.fillText('Obj.', zone.x + zone.radius, zone.y + zone.radius);
+            const labelText = zone.isSpecialFeature ? 'Special' : 'Obj.';
+            ctx.fillText(labelText, zone.x + zone.radius, zone.y + zone.radius);
         }
     } else {
         ctx.fillRect(zone.x, zone.y, zone.width, zone.height);
@@ -76,6 +80,13 @@ function drawZone(zone) {
             ctx.fillStyle = 'white';
             ctx.textAlign = 'center';
             ctx.fillText(labelText, zone.x + zone.width/2, zone.y + zone.height/2 + 4);
+        } else if (zone.isSpecialFeature) {
+            // Add "Special" label for special feature squares
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 14px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('Special', zone.x + zone.width/2, zone.y + zone.height/2);
         }
     }
 }
@@ -116,25 +127,10 @@ function getZoneCorner(x, y, zone) {
 
 function handleZonePlacement(x, y) {
     if (activeTool && activeTool.category === 'zone') {
+        // Remove the special feature click-to-place functionality
+        // Special features are now only placed via dropdown selection
         if (activeTool.type === 'special') {
-            const zone = {
-                type: activeTool.type,
-                x: x - 75,
-                y: y - 75,
-                width: 150,
-                height: 150,
-                category: 'zone',
-                isCircle: true,
-                radius: 3.5 * SCALE / 2
-            };
-            zone.x = x - zone.radius;
-            zone.y = y - zone.radius;
-            
-            zones.push(zone);
-            activeTool = null;
-            document.querySelectorAll('.zone-btn').forEach(b => b.classList.remove('active'));
-            updateCursor();
-            return true;
+            return false;
         }
         
         const zone = {
