@@ -214,8 +214,8 @@ function drawMeasurePreview(x1, y1, x2, y2) {
 
 function exportImage() {
     const exportCanvas = document.createElement('canvas');
-    exportCanvas.width = 2160;
-    exportCanvas.height = 1440;
+    exportCanvas.width = 1440;
+    exportCanvas.height = 960;
     const exportCtx = exportCanvas.getContext('2d');
     
     exportCtx.scale(2, 2);
