@@ -212,20 +212,13 @@ function drawMeasurePreview(x1, y1, x2, y2) {
     ctx.fillText(labelText, midX, midY);
 }
 
-// Detect iOS Safari — it has a known bug where toBlob() ignores the quality
-// parameter and produces heavily compressed output regardless of the value
-// passed. toDataURL() honours quality correctly on iOS and is used instead.
-function isIOSSafari() {
-    const ua = navigator.userAgent;
-    const isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
-    const isSafari = /^((?!chrome|android).)*safari/i.test(ua);
-    return isIOS || isSafari;
-}
-
 function exportImage() {
     // Cap the long side at 1920px to stay under Google Docs' internal
-    // resampling threshold. Small canvases scale up (max 2x).
-    // JPEG at 0.92 is visually lossless for terrain maps.
+    // resampling threshold, keeping the image sharp on all devices including
+    // iPhone. Small canvases scale up (max 2x) so they are never tiny.
+    // JPEG at 0.92 is visually lossless for terrain maps and keeps
+    // file size well under 500KB regardless of which browser or device
+    // is used to export.
     const MAX_EXPORT_DIM = 1920;
     const JPEG_QUALITY   = 0.92;
 
@@ -255,28 +248,14 @@ function exportImage() {
         0, 0, exportWidth, exportHeight
     );
 
-    if (isIOSSafari()) {
-        // iOS Safari toBlob() ignores quality — use toDataURL() instead
-        // which correctly honours the quality value on all iOS versions.
-        const dataURL = exportCanvas.toDataURL('image/jpeg', JPEG_QUALITY);
+    exportCanvas.toBlob((blob) => {
+        const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
-        a.href = dataURL;
+        a.href = url;
         a.download = 'tabletop-terrain.jpg';
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
-    } else {
-        // All other browsers (Chrome, Firefox, Android) use toBlob()
-        // which is more memory-efficient for large canvases.
-        exportCanvas.toBlob((blob) => {
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'tabletop-terrain.jpg';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        }, 'image/jpeg', JPEG_QUALITY);
-    }
+        URL.revokeObjectURL(url);
+    }, 'image/jpeg', JPEG_QUALITY);
 }
