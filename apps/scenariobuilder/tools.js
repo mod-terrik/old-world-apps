@@ -213,24 +213,44 @@ function drawMeasurePreview(x1, y1, x2, y2) {
 }
 
 function exportImage() {
+    // Use 3x scale for crisp rendering on all mobile/retina/high-DPI screens.
+    // The source canvas logical size is used as the base; we scale up the
+    // export canvas physical pixels so Google Docs and mobile browsers always
+    // display a sharp image regardless of device pixel ratio.
+    const EXPORT_SCALE = 3;
+
+    const srcWidth  = canvas.width;
+    const srcHeight = canvas.height;
+
     const exportCanvas = document.createElement('canvas');
-    exportCanvas.width = 1440;
-    exportCanvas.height = 960;
-    const exportCtx = exportCanvas.getContext('2d');
-    
-    exportCtx.scale(2, 2);
-    
+    exportCanvas.width  = srcWidth  * EXPORT_SCALE;
+    exportCanvas.height = srcHeight * EXPORT_SCALE;
+
+    const exportCtx = exportCanvas.getContext('2d', { alpha: false });
+
+    // Crisp pixel rendering — disable smoothing so upscaling stays sharp
+    exportCtx.imageSmoothingEnabled = false;
+
+    // White background
     exportCtx.fillStyle = 'white';
-    exportCtx.fillRect(0, 0, 1080, 720);
-    
-    exportCtx.drawImage(canvas, 0, 0);
-    
+    exportCtx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+
+    // Scale up and draw the source canvas at full resolution
+    exportCtx.drawImage(
+        canvas,
+        0, 0, srcWidth, srcHeight,          // source rect (full canvas)
+        0, 0, exportCanvas.width, exportCanvas.height  // dest rect (3x upscaled)
+    );
+
+    // Export as PNG (lossless) for maximum quality
     exportCanvas.toBlob((blob) => {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
         a.download = 'tabletop-terrain.png';
+        document.body.appendChild(a);
         a.click();
+        document.body.removeChild(a);
         URL.revokeObjectURL(url);
-    });
+    }, 'image/png');
 }
