@@ -212,19 +212,26 @@ function drawMeasurePreview(x1, y1, x2, y2) {
     ctx.fillText(labelText, midX, midY);
 }
 
+// Detect iOS Safari — it has a known bug where toBlob() ignores the quality
+// parameter and produces heavily compressed output regardless of the value
+// passed. toDataURL() honours quality correctly on iOS and is used instead.
+function isIOSSafari() {
+    const ua = navigator.userAgent;
+    const isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
+    const isSafari = /^((?!chrome|android).)*safari/i.test(ua);
+    return isIOS || isSafari;
+}
+
 function exportImage() {
-    // Cap the long side at 1920px — this keeps the image under Google Docs'
-    // internal resampling threshold so it won't be blurry on iPhone.
-    // Small canvases scale up (max 2x) so they are never tiny.
-    // JPEG at 0.90 is visually lossless for terrain maps and keeps
-    // file size well under 500KB (vs 11MB for 3x PNG).
+    // Cap the long side at 1920px to stay under Google Docs' internal
+    // resampling threshold. Small canvases scale up (max 2x).
+    // JPEG at 0.92 is visually lossless for terrain maps.
     const MAX_EXPORT_DIM = 1920;
-    const JPEG_QUALITY   = 0.90;
+    const JPEG_QUALITY   = 0.92;
 
     const srcWidth  = canvas.width;
     const srcHeight = canvas.height;
 
-    // Scale so the longest side equals MAX_EXPORT_DIM, but never exceed 2x
     const scale       = Math.min(2, MAX_EXPORT_DIM / Math.max(srcWidth, srcHeight));
     const exportWidth  = Math.round(srcWidth  * scale);
     const exportHeight = Math.round(srcHeight * scale);
@@ -235,7 +242,6 @@ function exportImage() {
 
     const exportCtx = exportCanvas.getContext('2d', { alpha: false });
 
-    // High-quality bicubic smoothing — crisp on all retina/high-DPI screens
     exportCtx.imageSmoothingEnabled = true;
     exportCtx.imageSmoothingQuality = 'high';
 
@@ -243,22 +249,34 @@ function exportImage() {
     exportCtx.fillStyle = 'white';
     exportCtx.fillRect(0, 0, exportWidth, exportHeight);
 
-    // Draw source canvas scaled to the export dimensions
     exportCtx.drawImage(
         canvas,
         0, 0, srcWidth, srcHeight,
         0, 0, exportWidth, exportHeight
     );
 
-    // JPEG export — lossless quality for maps, small file size
-    exportCanvas.toBlob((blob) => {
-        const url = URL.createObjectURL(blob);
+    if (isIOSSafari()) {
+        // iOS Safari toBlob() ignores quality — use toDataURL() instead
+        // which correctly honours the quality value on all iOS versions.
+        const dataURL = exportCanvas.toDataURL('image/jpeg', JPEG_QUALITY);
         const a = document.createElement('a');
-        a.href = url;
+        a.href = dataURL;
         a.download = 'tabletop-terrain.jpg';
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-    }, 'image/jpeg', JPEG_QUALITY);
+    } else {
+        // All other browsers (Chrome, Firefox, Android) use toBlob()
+        // which is more memory-efficient for large canvases.
+        exportCanvas.toBlob((blob) => {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'tabletop-terrain.jpg';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }, 'image/jpeg', JPEG_QUALITY);
+    }
 }
