@@ -213,37 +213,44 @@ function drawMeasurePreview(x1, y1, x2, y2) {
 }
 
 function exportImage() {
-    // 2x scale covers all iPhone/Android retina (DPR 2-3) screens sharply.
-    // JPEG at 0.92 quality gives ~85% smaller files than 3x PNG with no
-    // visible quality loss for terrain map content in Google Docs.
-    const EXPORT_SCALE = 2;
+    // Cap the long side at 1920px — this keeps the image under Google Docs'
+    // internal resampling threshold so it won't be blurry on iPhone.
+    // Small canvases scale up (max 2x) so they are never tiny.
+    // JPEG at 0.90 is visually lossless for terrain maps and keeps
+    // file size well under 500KB (vs 11MB for 3x PNG).
+    const MAX_EXPORT_DIM = 1920;
+    const JPEG_QUALITY   = 0.90;
 
     const srcWidth  = canvas.width;
     const srcHeight = canvas.height;
 
+    // Scale so the longest side equals MAX_EXPORT_DIM, but never exceed 2x
+    const scale       = Math.min(2, MAX_EXPORT_DIM / Math.max(srcWidth, srcHeight));
+    const exportWidth  = Math.round(srcWidth  * scale);
+    const exportHeight = Math.round(srcHeight * scale);
+
     const exportCanvas = document.createElement('canvas');
-    exportCanvas.width  = srcWidth  * EXPORT_SCALE;
-    exportCanvas.height = srcHeight * EXPORT_SCALE;
+    exportCanvas.width  = exportWidth;
+    exportCanvas.height = exportHeight;
 
     const exportCtx = exportCanvas.getContext('2d', { alpha: false });
 
-    // Enable high-quality smoothing so upscaled bitmap content stays crisp
-    // (not pixelated) on retina/high-DPI mobile screens.
+    // High-quality bicubic smoothing — crisp on all retina/high-DPI screens
     exportCtx.imageSmoothingEnabled = true;
     exportCtx.imageSmoothingQuality = 'high';
 
-    // White background (required for JPEG since it has no alpha channel)
+    // White background (JPEG has no alpha channel)
     exportCtx.fillStyle = 'white';
-    exportCtx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+    exportCtx.fillRect(0, 0, exportWidth, exportHeight);
 
-    // Draw source canvas scaled up to the full export resolution
+    // Draw source canvas scaled to the export dimensions
     exportCtx.drawImage(
         canvas,
         0, 0, srcWidth, srcHeight,
-        0, 0, exportCanvas.width, exportCanvas.height
+        0, 0, exportWidth, exportHeight
     );
 
-    // JPEG at 0.92 quality: visually lossless for maps, far smaller than PNG
+    // JPEG export — lossless quality for maps, small file size
     exportCanvas.toBlob((blob) => {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -253,5 +260,5 @@ function exportImage() {
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
-    }, 'image/jpeg', 0.92);
+    }, 'image/jpeg', JPEG_QUALITY);
 }
